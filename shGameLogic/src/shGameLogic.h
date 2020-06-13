@@ -32,7 +32,7 @@ namespace sh {
         const std::string name;
         const Type type;
     private:
-        bool dead;
+        bool dead = false;
     };
 
     enum class CardType {
