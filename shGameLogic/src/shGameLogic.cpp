@@ -4,6 +4,14 @@
 namespace sh {
     Player::Player(std::string name, sh::Player::Type type) : name(std::move(name)), type(type) {}
 
+    bool Player::isDead() const {
+        return dead ;
+    }
+
+    void Player::kill() {
+        dead = true;
+    }
+
     Game::Game(const std::vector<std::string> &players) : players(assignPlayers(players)),
         cardPool(NUM_FAS_CARDS, CardType::Fascist) {
         for(unsigned int i = 0; i < NUM_LIB_CARDS; ++i) {

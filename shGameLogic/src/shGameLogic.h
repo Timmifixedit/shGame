@@ -22,8 +22,17 @@ namespace sh {
 
         Player(std::string name, Type type);
 
+        /**
+         * Marks the player as dead;
+         */
+        void kill();
+
+        [[nodiscard]] bool isDead() const;
+
         const std::string name;
         const Type type;
+    private:
+        bool dead;
     };
 
     enum class CardType {
@@ -45,6 +54,8 @@ namespace sh {
          * @return number of fascist players in the game
          */
         static unsigned int numberOfLiberals(unsigned int numPlayers);
+
+
     private:
         static std::vector<Player> assignPlayers(const std::vector<std::string> &pNames);
         const std::vector<Player> players;
