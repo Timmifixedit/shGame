@@ -46,4 +46,8 @@ namespace sh {
 
         return ret;
     }
+
+    auto Game::getPlayers() const -> const std::vector<Player> & {
+        return players;
+    }
 }

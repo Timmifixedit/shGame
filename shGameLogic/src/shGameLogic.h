@@ -55,6 +55,11 @@ namespace sh {
          */
         static unsigned int numberOfLiberals(unsigned int numPlayers);
 
+        /**
+         * Returns vector of all players
+         * @return
+         */
+        [[nodiscard]] auto getPlayers() const -> const std::vector<Player> &;
 
     private:
         static std::vector<Player> assignPlayers(const std::vector<std::string> &pNames);
