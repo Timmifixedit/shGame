@@ -36,3 +36,11 @@ TEST(game_logic_game_test, ctor) {
     EXPECT_EQ(liberal, expectedLib);
     EXPECT_EQ(hitler, 1);
 }
+
+TEST(game_logic_game_test, ctor_invalid_number_of_players) {
+    EXPECT_THROW(sh::Game game({}), std::runtime_error);
+}
+
+TEST(game_logic_game_test, ctor_invalid_number_of_players_1) {
+    EXPECT_THROW(sh::Game game(std::vector<std::string>(15, "")), std::runtime_error);
+}
