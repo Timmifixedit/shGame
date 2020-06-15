@@ -14,8 +14,15 @@ TEST(game_logic_game_test, ctor) {
     int fascist = 0;
     int liberal = 0;
     int hitler = 0;
+    int president = 0;
     for(const auto &player : game.getPlayers()) {
         EXPECT_FALSE(player.isDead());
+        if(player.role == sh::Player::GovernmentRole::President) {
+            president++;
+        } else if (player.role == sh::Player::GovernmentRole::Chancellor) {
+            FAIL();
+        }
+
         switch (player.type) {
             case sh::Player::Type::Fascist:
                 fascist++;
@@ -35,6 +42,7 @@ TEST(game_logic_game_test, ctor) {
     EXPECT_EQ(fascist, expectedFasc);
     EXPECT_EQ(liberal, expectedLib);
     EXPECT_EQ(hitler, 1);
+    EXPECT_EQ(president, 1);
 }
 
 TEST(game_logic_game_test, ctor_invalid_number_of_players) {
