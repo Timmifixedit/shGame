@@ -73,6 +73,4 @@ namespace sh {
             reservoire.erase(card);
         }
     }
-
-
 }

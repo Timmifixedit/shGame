@@ -32,31 +32,37 @@ namespace sh {
     };
 
     class LiberalsWin : public PolicyEvent {
+    public:
         LiberalsWin();
         [[nodiscard]] bool condition(unsigned int numFascistCards, unsigned int numLiberalCards, CardType currentPolicy) const override;
     };
 
     class FascistsWin : public PolicyEvent {
+    public:
         FascistsWin();
         [[nodiscard]] bool condition(unsigned int numFascistCards, unsigned int numLiberalCards, CardType currentPolicy) const override;
     };
 
     class InvestigateLoyalty : public PolicyEvent {
+    public:
         InvestigateLoyalty();
         [[nodiscard]] bool condition(unsigned int numFascistCards, unsigned int numLiberalCards, CardType currentPolicy) const override;
     };
 
     class SpecialElection : public PolicyEvent {
+    public:
         SpecialElection();
         [[nodiscard]] bool condition(unsigned int numFascistCards, unsigned int numLiberalCards, CardType currentPolicy) const override;
     };
 
     class Execution : public PolicyEvent {
+    public:
         Execution();
         [[nodiscard]] bool condition(unsigned int numFascistCards, unsigned int numLiberalCards, CardType currentPolicy) const override;
     };
 
     class Veto : public PolicyEvent {
+    public:
         Veto();
         [[nodiscard]] bool condition(unsigned int numFascistCards, unsigned int numLiberalCards, CardType currentPolicy) const override;
     };

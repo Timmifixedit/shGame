@@ -8,7 +8,7 @@
 #include <string>
 
 
-TEST(game_logic_game_test, ctor) {
+TEST(game_logic_game_test, ctor_players) {
     std::vector<std::string> names = {"A", "B", "C", "D", "E", "F", "G"};
     const sh::Game game(names);
     int fascist = 0;
