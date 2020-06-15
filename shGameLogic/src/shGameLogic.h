@@ -79,13 +79,37 @@ namespace sh {
 
         auto playPolicy(CardType policy) -> std::optional<PolicyEvent::Type>;
 
+        /**
+         * Returns player with matching name
+         * @param name name of the plyer
+         * @return corresponding player or nothing if no player with specified name was found
+         */
+        [[nodiscard]] auto getPlayerByName(const std::string &name) const -> std::optional<std::vector<Player>::const_iterator>;
+        [[nodiscard]] auto getPlayerByName(const std::string &name) -> std::optional<std::vector<Player>::iterator>;
+
     private:
         static std::vector<Player> assignPlayers(const std::vector<std::string> &pNames);
         void restockCardPile();
-        const std::vector<Player> players;
+        std::vector<Player> players;
         std::map<CardType, unsigned int> policyBoard;
         std::vector<CardType> cardPile;
         std::size_t currentPlayer = 0;
+        template<typename T, typename C>
+        auto findByName(T iterator, const C &container, const std::string &name) const ->
+            std::optional<typename std::remove_reference<
+                    decltype(std::begin(container) != ++iterator,
+                    iterator->name == name,
+                    iterator)>::type> {
+            while (iterator != std::end(container)) {
+                if(iterator->name == name) {
+                    return iterator;
+                }
+
+                ++iterator;
+            }
+
+            return {};
+        }
     };
 }
 

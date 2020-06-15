@@ -73,4 +73,13 @@ namespace sh {
             reservoire.erase(card);
         }
     }
+
+    auto Game::getPlayerByName(const std::string &name) const -> std::optional<std::vector<Player>::const_iterator> {
+        return findByName(players.begin(), players, name);
+    }
+
+    auto Game::getPlayerByName(const std::string &name) -> std::optional<std::vector<Player>::iterator> {
+        return findByName(players.begin(), players, name);
+    }
+
 }

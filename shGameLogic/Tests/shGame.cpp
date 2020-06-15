@@ -6,6 +6,7 @@
 #include <vector>
 #include "shGameLogic.h"
 #include <string>
+#include <optional>
 
 
 TEST(game_logic_game_test, ctor_players) {
@@ -51,4 +52,12 @@ TEST(game_logic_game_test, ctor_invalid_number_of_players) {
 
 TEST(game_logic_game_test, ctor_invalid_number_of_players_1) {
     EXPECT_THROW(sh::Game game(std::vector<std::string>(15, "")), std::runtime_error);
+}
+
+TEST(game_logic_test, game_get_player_by_name) {
+    sh::Game game({"A", "B", "C", "D", "E", "F", "G"});
+    const auto cgame = game;
+    EXPECT_EQ((*game.getPlayerByName("A"))->name, "A");
+    EXPECT_EQ((*cgame.getPlayerByName("B"))->name, "B");
+    EXPECT_EQ(cgame.getPlayerByName("Z"), std::nullopt);
 }
