@@ -7,6 +7,11 @@
 #include <deque>
 #include <string>
 #include <array>
+#include <map>
+#include <optional>
+
+#include "GlobalTypes.h"
+#include "PolicyEvent.h"
 
 namespace sh {
     constexpr unsigned int NUM_LIB_CARDS = 6;
@@ -14,13 +19,20 @@ namespace sh {
     constexpr unsigned int MIN_NUM_PLAYERS = 5;
     constexpr unsigned int MAX_NUM_PLAYERS = 10;
 
+    /**
+     * Represents a player
+     */
     class Player {
     public:
-        enum class Type{
+        enum class Type {
             Fascist, Liberal, Hitler
         };
 
-        Player(std::string name, Type type);
+        enum class GovernmentRole {
+            President, Chancellor
+        };
+
+        Player(std::string name, Type type, std::optional<GovernmentRole> role = std::nullopt);
 
         /**
          * Marks the player as dead;
@@ -31,13 +43,11 @@ namespace sh {
 
         const std::string name;
         const Type type;
+        std::optional<GovernmentRole> role;
     private:
         bool dead = false;
     };
 
-    enum class CardType {
-        Fascist, Liberal
-    };
 
     class Game {
     public:
@@ -61,11 +71,20 @@ namespace sh {
          */
         [[nodiscard]] auto getPlayers() const -> const std::vector<Player> &;
 
+        /**
+         * Returns the number of liberal and fascist policies that where played previously
+         * @return Map of CardType -> number of played policies
+         */
+        [[nodiscard]] auto getPolicies() const -> const std::map<CardType, unsigned int> &;
+
+        auto playPolicy(CardType policy) -> std::optional<PolicyEvent::Type>;
+
     private:
         static std::vector<Player> assignPlayers(const std::vector<std::string> &pNames);
+        void restockCardPile();
         const std::vector<Player> players;
-        std::vector<CardType> policyBoard;
-        std::deque<CardType> cardPool;
+        std::map<CardType, unsigned int> policyBoard;
+        std::vector<CardType> cardPile;
         std::size_t currentPlayer = 0;
     };
 }

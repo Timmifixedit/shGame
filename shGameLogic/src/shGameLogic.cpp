@@ -1,8 +1,10 @@
 #include <stdexcept>
+#include <utility>
 #include "shGameLogic.h"
 #include "util.h"
 namespace sh {
-    Player::Player(std::string name, sh::Player::Type type) : name(std::move(name)), type(type) {}
+    Player::Player(std::string name, sh::Player::Type type, std::optional<GovernmentRole> role) :
+        name(std::move(name)), type(type), role(std::move(role)) {}
 
     bool Player::isDead() const {
         return dead ;
@@ -13,10 +15,8 @@ namespace sh {
     }
 
     Game::Game(const std::vector<std::string> &players) : players(assignPlayers(players)),
-        cardPool(NUM_FAS_CARDS, CardType::Fascist) {
-        for(unsigned int i = 0; i < NUM_LIB_CARDS; ++i) {
-            cardPool.emplace_back(CardType::Liberal);
-        }
+                                                          policyBoard() {
+        restockCardPile();
     }
 
     unsigned int Game::numberOfLiberals(unsigned int numPlayers) {
@@ -44,10 +44,35 @@ namespace sh {
             pTypes.erase(pType);
         }
 
+        util::selectRandom(ret)->role = Player::GovernmentRole::President;
         return ret;
     }
 
     auto Game::getPlayers() const -> const std::vector<Player> & {
         return players;
     }
+
+    auto Game::getPolicies() const -> const std::map<CardType, unsigned int> &{
+        return policyBoard;
+    }
+
+    void Game::restockCardPile() {
+        constexpr auto TOTAL_NUM_CARDS = NUM_FAS_CARDS + NUM_LIB_CARDS;
+        cardPile.clear();
+        cardPile.reserve(TOTAL_NUM_CARDS);
+        unsigned int libCards = NUM_LIB_CARDS - policyBoard.find(CardType::Liberal)->second;
+        unsigned int fascistCards = NUM_FAS_CARDS - policyBoard.find(CardType::Fascist)->second;
+        std::deque<CardType> reservoire(libCards, CardType::Liberal);
+        for (unsigned int i = 0; i < fascistCards; ++i) {
+            reservoire.emplace_back(CardType::Fascist);
+        }
+
+        while (!reservoire.empty()) {
+            const auto card = util::selectRandom(reservoire);
+            cardPile.emplace_back(*card);
+            reservoire.erase(card);
+        }
+    }
+
+
 }
