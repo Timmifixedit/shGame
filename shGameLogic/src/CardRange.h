@@ -22,12 +22,13 @@ namespace sh{
          * Gets the cards contained in the range
          * @return
          */
-        auto content() const -> const std::deque<CardType>&;
+        [[nodiscard]] auto content() const -> const std::deque<CardType>&;
 
         /**
          * Marks a card of the selected type as discarded
          * @param card type of the card to be discarded
-         * @return true if card was discarded successfully, false if card of specified type cannot be found
+         * @return true if card was discarded successfully, false if card of specified type cannot be found or if range
+         * was already applied to game
          */
         bool discard(CardType card);
 
@@ -35,7 +36,7 @@ namespace sh{
          * Selects a card to be added as policy
          * @param card type of the card to be added as policy
          * @return true if card was successfully marked, false if card of specified type cannot be found or a policy
-         * has already been chosen
+         * has already been chosen or if range was already applied to game
          */
         bool selectForPolicy(CardType card);
 
@@ -51,6 +52,22 @@ namespace sh{
          * game stays constant
          */
         ~CardRange();
+
+        [[nodiscard]] auto begin() const -> std::deque<CardType>::const_iterator;
+        [[nodiscard]] auto end() const -> std::deque<CardType>::const_iterator;
+
+        /**
+         * Returns the number of cards in the CardRange, discarded and policy cards are NOT included
+         * @return
+         */
+        [[nodiscard]] std::size_t size() const;
+
+        /**
+         * Index based read access to content of CardRange, discarded and policy cards are NOT included
+         * @param i index of card, no range checks are performed!
+         * @return
+         */
+        CardType operator()(std::size_t i) const;
 
     private:
         Game &game;

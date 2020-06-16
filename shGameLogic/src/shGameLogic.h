@@ -95,6 +95,18 @@ namespace sh {
          */
         auto drawCards(unsigned int n) -> CardRange;
 
+        /**
+         * Gets the current cards on the card pile
+         * @return
+         */
+        [[nodiscard]] auto getCardPile() const -> const std::vector<CardType>&;
+
+        /**
+         * Gets the current cards on the discard pile
+         * @return
+         */
+        [[nodiscard]] auto getDiscardCardPile() const -> const std::vector<CardType>&;
+
 
     private:
         friend class CardRange;

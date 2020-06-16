@@ -12,6 +12,8 @@
 TEST(game_logic_game_test, ctor_players) {
     std::vector<std::string> names = {"A", "B", "C", "D", "E", "F", "G"};
     const sh::Game game(names);
+    EXPECT_EQ(game.getPolicies().find(sh::CardType::Fascist)->second, 0);
+    EXPECT_EQ(game.getPolicies().find(sh::CardType::Liberal)->second, 0);
     int fascist = 0;
     int liberal = 0;
     int hitler = 0;

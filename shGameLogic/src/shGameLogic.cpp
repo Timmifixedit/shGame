@@ -15,7 +15,8 @@ namespace sh {
     }
 
     Game::Game(const std::vector<std::string> &players) : players(assignPlayers(players)),
-                                                          policyBoard() {
+                                                          policyBoard({{CardType::Liberal, 0},
+                                                                       {CardType::Fascist, 0}}) {
         restockCardPile();
     }
 
@@ -85,6 +86,14 @@ namespace sh {
 
     auto Game::drawCards(unsigned int n) -> CardRange {
         return CardRange(*this, n);
+    }
+
+    auto Game::getCardPile() const -> const std::vector<CardType> & {
+        return cardPile;
+    }
+
+    auto Game::getDiscardCardPile() const -> const std::vector<CardType> & {
+        return discardPile;
     }
 
 }

@@ -8,17 +8,17 @@
 namespace sh {
 
     CardRange::CardRange(Game &game, unsigned int n) : game(game) {
-        std::size_t totNumCards = this->game.cardPile.size() + this->game.discardPile.size();
-        if (n > totNumCards) {
+        std::size_t drawableCards = this->game.cardPile.size() + this->game.discardPile.size();
+        if (n > drawableCards) {
             throw std::runtime_error(std::string("Cannot create card range of size ") + std::to_string(n)
-                                    + "! Game has only " + std::to_string(totNumCards) + " left!");
+                                     + "! Game has only " + std::to_string(drawableCards) + " left!");
         }
 
         if(n > this->game.cardPile.size()) {
             this->game.restockCardPile();
         }
 
-        cards = std::deque<CardType>(this->game.cardPile.end() - n, this->game.cardPile.end());
+        cards = std::deque<CardType>(this->game.cardPile.rbegin(), this->game.cardPile.rbegin() + n);
         this->game.cardPile.erase(this->game.cardPile.end() - n, this->game.cardPile.end());
     }
 
@@ -27,6 +27,10 @@ namespace sh {
     }
 
     bool CardRange::discard(CardType card) {
+        if (applied) {
+            return false;
+        }
+
         auto res = std::find(cards.begin(), cards.end(), card);
         if (res != cards.end()) {
             discarded.emplace_back(card);
@@ -38,7 +42,7 @@ namespace sh {
     }
 
     bool CardRange::selectForPolicy(CardType card) {
-        if (policy.has_value()) {
+        if (policy.has_value() || applied) {
             return false;
         }
 
@@ -66,8 +70,8 @@ namespace sh {
             game.discardPile.emplace_back(card);
         }
 
-        for (auto card : cards) {
-            game.cardPile.emplace_back(card);
+        for (auto it = cards.rbegin(); it != cards.rend(); ++it) {
+            game.cardPile.emplace_back(*it);
         }
 
         return true;
@@ -75,5 +79,21 @@ namespace sh {
 
     CardRange::~CardRange() {
         applyToGame();
+    }
+
+    auto CardRange::begin() const -> std::deque<CardType>::const_iterator {
+        return cards.cbegin();
+    }
+
+    auto CardRange::end() const -> std::deque<CardType>::const_iterator {
+        return cards.cend();
+    }
+
+    CardType CardRange::operator()(std::size_t i) const {
+        return cards[i];
+    }
+
+    std::size_t CardRange::size() const {
+        return cards.size();
     }
 }
