@@ -55,8 +55,7 @@ namespace sh{
         [[nodiscard]] bool alreadyApplied() const;
 
         /**
-         * Applies the card range to the corresponding game (see applyToGame) to ensure that the number of cards in the
-         * game stays constant
+         * If changes to board were not applied, cards are put back to card pile of Game
          */
         ~CardRange();
 
@@ -78,6 +77,7 @@ namespace sh{
 
     private:
         Game &game;
+        std::vector<CardType> initialState;
         std::deque<CardType> cards;
         std::vector<CardType> discarded;
         std::optional<CardType> policy = std::nullopt;

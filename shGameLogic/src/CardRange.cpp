@@ -18,6 +18,7 @@ namespace sh {
             this->game.restockCardPile();
         }
 
+        initialState = std::vector<CardType>(this->game.cardPile.rbegin(), this->game.cardPile.rbegin() + n);
         cards = std::deque<CardType>(this->game.cardPile.rbegin(), this->game.cardPile.rbegin() + n);
         this->game.cardPile.erase(this->game.cardPile.end() - n, this->game.cardPile.end());
     }
@@ -78,7 +79,11 @@ namespace sh {
     }
 
     CardRange::~CardRange() {
-        applyToGame();
+        if (!applied) {
+            for (auto it = initialState.rbegin(); it != initialState.rend(); ++it) {
+                game.cardPile.emplace_back(*it);
+            }
+        }
     }
 
     auto CardRange::begin() const -> std::deque<CardType>::const_iterator {
