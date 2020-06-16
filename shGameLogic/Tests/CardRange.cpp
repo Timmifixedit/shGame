@@ -39,7 +39,7 @@ TEST(card_range_test, discard_and_return) {
 
     EXPECT_EQ(topCards.size(), 1);
     CardType remainingCard = *topCards.begin();
-    EXPECT_TRUE(topCards.applyToGame());
+    EXPECT_TRUE(topCards.applyToGame().first);
     EXPECT_EQ(game.getCardPile().back(), remainingCard);
     EXPECT_EQ(game.getCardPile().size(), nOfCards - 2);
     EXPECT_EQ(game.getDiscardCardPile(), discardedCards);
@@ -54,7 +54,7 @@ TEST(card_range_test, policy_and_return) {
     CardType policy = topCards(0);
     EXPECT_TRUE(topCards.selectForPolicy(topCards(0)));
     EXPECT_EQ(topCards.size(), 2);
-    EXPECT_TRUE(topCards.applyToGame());
+    EXPECT_TRUE(topCards.applyToGame().first);
     EXPECT_EQ(cardPileOneLess, game.getCardPile());
     EXPECT_TRUE(game.getDiscardCardPile().empty());
     EXPECT_EQ(game.getPolicies().find(policy)->second, 1);
@@ -78,7 +78,7 @@ TEST(card_range_test, discard_applied) {
     using namespace sh;
     Game game({"A", "B", "C", "D", "E", "F", "G"});
     CardRange topCards = game.drawCards(3);
-    EXPECT_TRUE(topCards.applyToGame());
+    EXPECT_TRUE(topCards.applyToGame().first);
     EXPECT_FALSE(topCards.discard(topCards(0)));
 }
 
@@ -98,7 +98,7 @@ TEST(card_range_test, policy_applied) {
     using namespace sh;
     Game game({"A", "B", "C", "D", "E", "F", "G"});
     CardRange topCards = game.drawCards(3);
-    EXPECT_TRUE(topCards.applyToGame());
+    EXPECT_TRUE(topCards.applyToGame().first);
     EXPECT_FALSE(topCards.selectForPolicy(topCards(0)));
 }
 
@@ -106,8 +106,8 @@ TEST(card_range_test, double_apply) {
     using namespace sh;
     Game game({"A", "B", "C", "D", "E", "F", "G"});
     CardRange topCards = game.drawCards(3);
-    EXPECT_TRUE(topCards.applyToGame());
-    EXPECT_FALSE(topCards.applyToGame());
+    EXPECT_TRUE(topCards.applyToGame().first);
+    EXPECT_FALSE(topCards.applyToGame().first);
 }
 
 TEST(card_range_test, raii_not_applied) {
@@ -138,7 +138,7 @@ TEST(card_range_test, raii_applied) {
         EXPECT_TRUE(topCards.discard(topCards(0)));
         policy = topCards(0);
         EXPECT_TRUE(topCards.selectForPolicy(topCards(0)));
-        EXPECT_TRUE(topCards.applyToGame());
+        EXPECT_TRUE(topCards.applyToGame().first);
     }
 
     EXPECT_EQ(game.getCardPile().size(), numCards - 2);

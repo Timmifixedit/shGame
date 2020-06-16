@@ -12,5 +12,11 @@ namespace sh{
     enum class CardType {
         Fascist, Liberal
     };
+
+    enum class PolicyEvent {
+        LiberalsWin, FascistsWin,
+        InvestigateLoyalty, Execution,
+        PolicyPeak, SpecialElection, Veto
+    };
 }
 #endif //SHGAME_GLOBALTYPES_H

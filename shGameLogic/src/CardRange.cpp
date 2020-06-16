@@ -57,9 +57,9 @@ namespace sh {
         return false;
     }
 
-    bool CardRange::applyToGame() {
+    auto CardRange::applyToGame() -> std::pair<bool, std::optional<PolicyEvent>> {
         if (applied) {
-            return false;
+            return {false, std::nullopt};
         }
 
         applied = true;
@@ -75,7 +75,7 @@ namespace sh {
             game.cardPile.emplace_back(*it);
         }
 
-        return true;
+        return {true, getOccuringEvent()};
     }
 
     CardRange::~CardRange() {
@@ -104,5 +104,43 @@ namespace sh {
 
     bool CardRange::alreadyApplied() const {
         return applied;
+    }
+
+    auto CardRange::getOccuringEvent() const -> std::optional<PolicyEvent> {
+        constexpr unsigned int NUM_LIB_CARDS_WIN = 5;
+        constexpr unsigned int NUM_FAS_CARDS_WIN = 6;
+        constexpr unsigned int NUM_FAS_CARDS_VETO = 5;
+        constexpr unsigned int NUM_FAS_CARDS_EXEC = 4;
+        constexpr unsigned int NUM_FAS_CARDS_ELECTION = 3;
+        constexpr unsigned int NUM_FAS_CARDS_LOYAL = 2;
+        if (!policy.has_value()) {
+            return {};
+        }
+
+        unsigned int criticalCards = game.getPolicies().find(*policy)->second;
+        switch (*policy) {
+            case CardType::Fascist:
+                if (criticalCards == NUM_FAS_CARDS_WIN) {
+                    return PolicyEvent::FascistsWin;
+                } else if (criticalCards >= NUM_FAS_CARDS_VETO) {
+                    return PolicyEvent::Veto;
+                } else if (criticalCards == NUM_FAS_CARDS_EXEC) {
+                    return PolicyEvent::Execution;
+                } else if (criticalCards == NUM_FAS_CARDS_ELECTION) {
+                    return PolicyEvent::SpecialElection;
+                } else if (criticalCards == NUM_FAS_CARDS_LOYAL) {
+                    return PolicyEvent::InvestigateLoyalty;
+                }
+
+                break;
+            case CardType::Liberal:
+                if (criticalCards == NUM_LIB_CARDS_WIN) {
+                    return PolicyEvent::LiberalsWin;
+                }
+
+                break;
+        }
+
+        return {};
     }
 }

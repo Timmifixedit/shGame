@@ -8,10 +8,10 @@
 #include <vector>
 #include <optional>
 #include <deque>
+#include <utility>
 
 #include "shGameLogic.h"
 #include "GlobalTypes.h"
-#include "PolicyEvent.h"
 
 namespace sh{
     class Game;
@@ -46,7 +46,7 @@ namespace sh{
          * cards marked for discard are added to the discard pile. Remaining cards are put back to the card pile
          * @return false if this method has already been called, true otherwise
          */
-        bool applyToGame();
+        auto applyToGame() -> std::pair<bool, std::optional<PolicyEvent>>;
 
         /**
          * Whether the card range has been applied to the game
@@ -76,6 +76,7 @@ namespace sh{
         CardType operator()(std::size_t i) const;
 
     private:
+        [[nodiscard]] auto getOccuringEvent() const -> std::optional<PolicyEvent>;
         Game &game;
         std::vector<CardType> initialState;
         std::deque<CardType> cards;

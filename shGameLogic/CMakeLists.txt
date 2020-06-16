@@ -17,7 +17,6 @@ endif ()
 project(SecretHitlerGameLogic VERSION 0.1 DESCRIPTION "Game logic for the card game Secret Hitler")
 
 set(SOURCES
-        ${CMAKE_SOURCE_DIR}/src/PolicyEvent.cpp
         ${CMAKE_SOURCE_DIR}/src/shGameLogic.cpp
         ${CMAKE_SOURCE_DIR}/src/util.cpp
         ${CMAKE_SOURCE_DIR}/src/CardRange.cpp
