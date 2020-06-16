@@ -114,22 +114,6 @@ namespace sh {
         std::vector<CardType> cardPile;
         std::vector<CardType> discardPile;
         std::size_t currentPlayer = 0;
-        template<typename T, typename C>
-        auto findByName(T iterator, const C &container, const std::string &name) const ->
-            std::optional<typename std::remove_reference<
-                    decltype(std::begin(container) != ++iterator,
-                    iterator->name == name,
-                    iterator)>::type> {
-            while (iterator != std::end(container)) {
-                if(iterator->name == name) {
-                    return iterator;
-                }
-
-                ++iterator;
-            }
-
-            return {};
-        }
     };
 }
 

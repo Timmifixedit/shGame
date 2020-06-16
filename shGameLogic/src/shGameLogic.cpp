@@ -1,5 +1,7 @@
 #include <stdexcept>
 #include <utility>
+#include <algorithm>
+
 #include "shGameLogic.h"
 #include "util.h"
 namespace sh {
@@ -77,11 +79,21 @@ namespace sh {
     }
 
     auto Game::getPlayerByName(const std::string &name) const -> std::optional<std::vector<Player>::const_iterator> {
-        return findByName(players.begin(), players, name);
+        auto ret = std::find_if(players.begin(), players.end(), [name](const auto &a){return a.name == name;});
+        if (ret != players.end()) {
+            return ret;
+        }
+
+        return {};
     }
 
     auto Game::getPlayerByName(const std::string &name) -> std::optional<std::vector<Player>::iterator> {
-        return findByName(players.begin(), players, name);
+        auto ret = std::find_if(players.begin(), players.end(), [name](const auto &a){return a.name == name;});
+        if (ret != players.end()) {
+            return ret;
+        }
+
+        return {};
     }
 
     auto Game::drawCards(unsigned int n) -> CardRange {
