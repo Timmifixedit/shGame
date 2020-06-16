@@ -96,4 +96,8 @@ namespace sh {
     std::size_t CardRange::size() const {
         return cards.size();
     }
+
+    bool CardRange::alreadyApplied() const {
+        return applied;
+    }
 }

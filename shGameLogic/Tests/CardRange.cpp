@@ -4,7 +4,6 @@
 
 #include <gtest/gtest.h>
 #include <deque>
-#include <iostream>
 
 #include "GlobalTypes.h"
 #include "shGameLogic.h"
@@ -123,4 +122,13 @@ TEST(card_range_test, raii) {
     EXPECT_TRUE(game.getDiscardCardPile().empty());
     EXPECT_EQ(game.getPolicies().find(CardType::Fascist)->second, 0);
     EXPECT_EQ(game.getPolicies().find(CardType::Liberal)->second, 0);
+}
+
+TEST(car_range_test, applied_status) {
+    using namespace sh;
+    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    CardRange topCards = game.drawCards(3);
+    EXPECT_FALSE(topCards.alreadyApplied());
+    topCards.applyToGame();
+    EXPECT_TRUE(topCards.alreadyApplied());
 }

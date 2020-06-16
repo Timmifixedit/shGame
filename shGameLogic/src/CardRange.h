@@ -11,6 +11,7 @@
 
 #include "shGameLogic.h"
 #include "GlobalTypes.h"
+#include "PolicyEvent.h"
 
 namespace sh{
     class Game;
@@ -46,6 +47,12 @@ namespace sh{
          * @return false if this method has already been called, true otherwise
          */
         bool applyToGame();
+
+        /**
+         * Whether the card range has been applied to the game
+         * @return true if already applied, false otherwise
+         */
+        [[nodiscard]] bool alreadyApplied() const;
 
         /**
          * Applies the card range to the corresponding game (see applyToGame) to ensure that the number of cards in the

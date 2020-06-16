@@ -11,7 +11,6 @@
 #include <optional>
 
 #include "GlobalTypes.h"
-#include "PolicyEvent.h"
 #include "CardRange.h"
 
 namespace sh {
@@ -77,8 +76,6 @@ namespace sh {
          * @return Map of CardType -> number of played policies
          */
         [[nodiscard]] auto getPolicies() const -> const std::map<CardType, unsigned int> &;
-
-        auto playPolicy(CardType policy) -> std::optional<PolicyEvent::Type>;
 
         /**
          * Returns player with matching name
