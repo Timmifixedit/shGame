@@ -59,6 +59,7 @@ namespace sh {
     void Game::restockCardPile() {
         constexpr auto TOTAL_NUM_CARDS = NUM_FAS_CARDS + NUM_LIB_CARDS;
         cardPile.clear();
+        discardPile.clear();
         cardPile.reserve(TOTAL_NUM_CARDS);
         unsigned int libCards = NUM_LIB_CARDS - policyBoard.find(CardType::Liberal)->second;
         unsigned int fascistCards = NUM_FAS_CARDS - policyBoard.find(CardType::Fascist)->second;
@@ -80,6 +81,10 @@ namespace sh {
 
     auto Game::getPlayerByName(const std::string &name) -> std::optional<std::vector<Player>::iterator> {
         return findByName(players.begin(), players, name);
+    }
+
+    auto Game::drawCards(unsigned int n) -> CardRange {
+        return CardRange(*this, n);
     }
 
 }

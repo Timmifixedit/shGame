@@ -12,13 +12,14 @@
 
 #include "GlobalTypes.h"
 #include "PolicyEvent.h"
+#include "CardRange.h"
 
 namespace sh {
     constexpr unsigned int NUM_LIB_CARDS = 6;
     constexpr unsigned int NUM_FAS_CARDS = 11;
     constexpr unsigned int MIN_NUM_PLAYERS = 5;
     constexpr unsigned int MAX_NUM_PLAYERS = 10;
-
+    class CardRange;
     /**
      * Represents a player
      */
@@ -87,12 +88,22 @@ namespace sh {
         [[nodiscard]] auto getPlayerByName(const std::string &name) const -> std::optional<std::vector<Player>::const_iterator>;
         [[nodiscard]] auto getPlayerByName(const std::string &name) -> std::optional<std::vector<Player>::iterator>;
 
+        /**
+         * Gets the top n cards from the card pile.
+         * @param n Number of cards to view
+         * @return Top card on the card pile as CardRange
+         */
+        auto drawCards(unsigned int n) -> CardRange;
+
+
     private:
+        friend class CardRange;
         static std::vector<Player> assignPlayers(const std::vector<std::string> &pNames);
         void restockCardPile();
         std::vector<Player> players;
         std::map<CardType, unsigned int> policyBoard;
         std::vector<CardType> cardPile;
+        std::vector<CardType> discardPile;
         std::size_t currentPlayer = 0;
         template<typename T, typename C>
         auto findByName(T iterator, const C &container, const std::string &name) const ->
