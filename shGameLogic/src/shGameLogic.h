@@ -133,7 +133,8 @@ namespace sh {
         bool killPlayer(const std::string &playerName);
 
         /**
-         * Sets the next player in row (who is still alive) as president
+         * Sets the next player in row (who is still alive) as president. If no player is president yet, one is
+         * randomly chosen
          */
         void setNextPresident();
 

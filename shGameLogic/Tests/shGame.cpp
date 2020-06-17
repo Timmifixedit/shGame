@@ -141,6 +141,43 @@ TEST(game_logic_test, set_new_chanellor) {
 }
 
 //--------------- get set roles ----------------------------------------------------------------------------------------
+TEST(game_logic_test, set_next_president) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    EXPECT_EQ(game.setPlayerRole("C", Role::President), SetRoleStatus::Success);
+    game.setNextPresident();
+    EXPECT_FALSE((*game.getPlayerByName("C"))->role.has_value());
+    EXPECT_EQ((*game.getPlayerByName("D"))->role, Role::President);
+}
+
+TEST(game_logic_test, set_next_pres_skip_dead) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    EXPECT_EQ(game.setPlayerRole("F", Role::President), SetRoleStatus::Success);
+    EXPECT_TRUE(game.killPlayer("G"));
+    game.setNextPresident();
+    EXPECT_FALSE((*game.getPlayerByName("C"))->role.has_value());
+    EXPECT_EQ((*game.getPlayerByName("A"))->role, Role::President);
+}
+
+TEST(game_logic_test, set_next_pres_all_dead) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    auto player = *game.getPlayerByName("A");
+    EXPECT_EQ(game.setPlayerRole(player->name, Role::President), SetRoleStatus::Success);
+    ++player;
+    while (player != game.getPlayers().end()) {
+        player->kill();
+        ++player;
+    }
+
+    EXPECT_THROW(game.setNextPresident(), std::runtime_error);
+}
+
+//--------------- get set roles ----------------------------------------------------------------------------------------
 TEST(game_logic_test, kill_player) {
     using namespace sh;
     Game game({"A", "B", "C", "D", "E", "F", "G"});

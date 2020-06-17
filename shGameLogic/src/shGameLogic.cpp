@@ -174,17 +174,21 @@ namespace sh {
 
     void Game::setNextPresident() {
         auto currPres = getPlayerByCurrentRole(Player::GovernmentRole::President);
-        if (currPres.has_value()) {
-            (*currPres)->role.reset();
+        if (!currPres.has_value()) {
+            currPres = util::selectRandom(players);
         }
 
         std::size_t counter = players.size();
-        while (++*currPres == players.end() || (*currPres)->isDead()) {
-            if (counter-- == 0) {
+        do {
+            if (++*currPres == players.end()) {
+                currPres = players.begin();
+            }
+
+            if (--counter == 0) {
                 throw std::runtime_error("All players are dead!");
             }
-        }
+        } while ((*currPres)->isDead());
 
-        (*currPres)->role = Player::GovernmentRole::President;
+        setPlayerRole((*currPres)->name, Player::GovernmentRole::President);
     }
 }
