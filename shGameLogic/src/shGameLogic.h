@@ -41,6 +41,9 @@ namespace sh {
 
         [[nodiscard]] bool isDead() const;
 
+        bool operator==(const Player &other) const;
+        bool operator!=(const Player &other) const;
+
         const std::string name;
         const Type type;
         std::optional<GovernmentRole> role;
@@ -104,6 +107,36 @@ namespace sh {
          */
         [[nodiscard]] auto getDiscardCardPile() const -> const std::vector<CardType>&;
 
+        /**
+         * Returns an iterator to the player with the specified role
+         * @param role desired role
+         * @return
+         */
+        auto GetPlayerByCurrentRole(Player::GovernmentRole role) const -> std::optional<std::vector<Player>::const_iterator>;
+        auto getPlayerByCurrentRole(Player::GovernmentRole role) -> std::optional<std::vector<Player>::iterator>;
+
+        /**
+         * Sets the role of the player with the specified role
+         * @param playerName name of the player
+         * @param role desired role
+         * @return Success if role was assigned, PlayerIsDead if player cannot be assigned a role since they are dead,
+         * Ineligible if trying to elect a player that is ineligible according to the game rules, nothing if player
+         * cannot be found by the specified name
+         */
+        auto setPlayerRole(const std::string &playerName, Player::GovernmentRole role) -> std::optional<SetRoleStatus>;
+
+        /**
+         * Marks the specified player as dead
+         * @param playerName name of the player
+         * @return true if player was successfully killed, false if player could not be found by the name
+         */
+        bool killPlayer(const std::string &playerName);
+
+        /**
+         * Sets the next player in row (who is still alive) as president
+         */
+        void setNextPresident();
+
 
     private:
         friend class CardRange;
@@ -113,7 +146,6 @@ namespace sh {
         std::map<CardType, unsigned int> policyBoard;
         std::vector<CardType> cardPile;
         std::vector<CardType> discardPile;
-        std::size_t currentPlayer = 0;
     };
 }
 

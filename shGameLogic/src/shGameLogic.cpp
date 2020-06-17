@@ -16,6 +16,14 @@ namespace sh {
         dead = true;
     }
 
+    bool Player::operator==(const Player &other) const {
+        return name == other.name && role == other.role && type == other.type && isDead() == other.isDead();
+    }
+
+    bool Player::operator!=(const Player &other) const {
+        return !(*this == other);
+    }
+
     Game::Game(const std::vector<std::string> &players) : players(assignPlayers(players)),
                                                           policyBoard({{CardType::Liberal, 0},
                                                                        {CardType::Fascist, 0}}) {
@@ -47,7 +55,6 @@ namespace sh {
             pTypes.erase(pType);
         }
 
-        util::selectRandom(ret)->role = Player::GovernmentRole::President;
         return ret;
     }
 
@@ -108,4 +115,76 @@ namespace sh {
         return discardPile;
     }
 
+    auto Game::GetPlayerByCurrentRole(Player::GovernmentRole role) const ->
+        std::optional<std::vector<Player>::const_iterator> {
+        auto ret = std::find_if(players.cbegin(), players.cend(),
+                [role](const auto &a){return a.role == role;});
+        if (ret == players.end()) {
+            return {};
+        }
+
+        return ret;
+    }
+
+    auto Game::getPlayerByCurrentRole(Player::GovernmentRole role) -> std::optional<std::vector<Player>::iterator> {
+        auto ret = std::find_if(players.begin(), players.end(),
+                                [role](const auto &a){return a.role == role;});
+        if (ret == players.end()) {
+            return {};
+        }
+
+        return ret;
+    }
+
+     auto Game::setPlayerRole(const std::string &playerName, Player::GovernmentRole role) -> std::optional<SetRoleStatus> {
+        using Role = Player::GovernmentRole;
+         auto newRoleBearer = getPlayerByName(playerName);
+         if (!newRoleBearer.has_value()) {
+             return {};
+         }
+
+         if ((*newRoleBearer)->isDead()) {
+             return SetRoleStatus::PlayerIsDead;
+         }
+
+         bool invalidChancellor = role == Role::Chancellor && (*newRoleBearer)->role.has_value();
+         bool invalidPresident = role == Role::President && (*newRoleBearer)->role == Role::President;
+         if (invalidChancellor || invalidPresident) {
+             return SetRoleStatus::Ineligible;
+         }
+
+         auto currentRoleBearer = getPlayerByCurrentRole(role);
+         if (currentRoleBearer.has_value()) {
+             (*currentRoleBearer)->role.reset();
+         }
+
+         (*newRoleBearer)->role = role;
+         return SetRoleStatus::Success;
+    }
+
+    bool Game::killPlayer(const std::string &playerName) {
+        auto player = getPlayerByName(playerName);
+        if (!player.has_value()) {
+            return false;
+        }
+
+        (*player)->kill();
+        return true;
+    }
+
+    void Game::setNextPresident() {
+        auto currPres = getPlayerByCurrentRole(Player::GovernmentRole::President);
+        if (currPres.has_value()) {
+            (*currPres)->role.reset();
+        }
+
+        std::size_t counter = players.size();
+        while (++*currPres == players.end() || (*currPres)->isDead()) {
+            if (counter-- == 0) {
+                throw std::runtime_error("All players are dead!");
+            }
+        }
+
+        (*currPres)->role = Player::GovernmentRole::President;
+    }
 }

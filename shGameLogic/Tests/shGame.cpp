@@ -17,14 +17,9 @@ TEST(game_logic_game_test, ctor_players) {
     int fascist = 0;
     int liberal = 0;
     int hitler = 0;
-    int president = 0;
     for(const auto &player : game.getPlayers()) {
         EXPECT_FALSE(player.isDead());
-        if(player.role == sh::Player::GovernmentRole::President) {
-            president++;
-        } else if (player.role == sh::Player::GovernmentRole::Chancellor) {
-            FAIL();
-        }
+        EXPECT_FALSE(player.role.has_value());
 
         switch (player.type) {
             case sh::Player::Type::Fascist:
@@ -45,7 +40,6 @@ TEST(game_logic_game_test, ctor_players) {
     EXPECT_EQ(fascist, expectedFasc);
     EXPECT_EQ(liberal, expectedLib);
     EXPECT_EQ(hitler, 1);
-    EXPECT_EQ(president, 1);
 }
 
 TEST(game_logic_game_test, ctor_invalid_number_of_players) {
@@ -62,4 +56,48 @@ TEST(game_logic_test, game_get_player_by_name) {
     EXPECT_EQ((*game.getPlayerByName("A"))->name, "A");
     EXPECT_EQ((*cgame.getPlayerByName("B"))->name, "B");
     EXPECT_EQ(cgame.getPlayerByName("Z"), std::nullopt);
+}
+
+TEST(game_logic_test, get_set_president) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    const Player &newPres = game.getPlayers().front();
+
+    EXPECT_EQ(game.setPlayerRole(newPres.name, Role::President), SetRoleStatus::Success);
+    EXPECT_EQ(newPres, **game.getPlayerByCurrentRole(Role::President));
+}
+
+TEST(game_logic_test, set_role_dead) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    EXPECT_TRUE(game.killPlayer("A"));
+    EXPECT_EQ(game.setPlayerRole("A", Role::Chancellor), SetRoleStatus::PlayerIsDead);
+}
+
+TEST(game_logic_test, set_same_president) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    const Player pres = game.getPlayers().front();
+    EXPECT_EQ(game.setPlayerRole(pres.name, Role::President), SetRoleStatus::Success);
+    EXPECT_EQ(game.setPlayerRole(pres.name, Role::President), SetRoleStatus::Ineligible);
+}
+
+TEST(game_logic_test, set_role_player_not_found) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    EXPECT_FALSE(game.setPlayerRole("Z", Role::Chancellor).has_value());
+}
+
+TEST(game_logic_test, get_set_chancellor) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    const Player &chancellor = game.getPlayers().front();
+    EXPECT_EQ(game.setPlayerRole(chancellor.name, Role::Chancellor), SetRoleStatus::Success);
+    EXPECT_EQ(chancellor.role, Role::Chancellor);
+
 }

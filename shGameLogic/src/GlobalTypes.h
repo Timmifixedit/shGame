@@ -18,5 +18,9 @@ namespace sh{
         InvestigateLoyalty, Execution,
         PolicyPeak, SpecialElection, Veto
     };
+
+    enum class SetRoleStatus {
+        PlayerIsDead, Ineligible, Success
+    };
 }
 #endif //SHGAME_GLOBALTYPES_H
