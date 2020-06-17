@@ -8,6 +8,7 @@
 #include <string>
 #include <optional>
 
+//--------------- ctor -------------------------------------------------------------------------------------------------
 
 TEST(game_logic_game_test, ctor_players) {
     std::vector<std::string> names = {"A", "B", "C", "D", "E", "F", "G"};
@@ -50,6 +51,7 @@ TEST(game_logic_game_test, ctor_invalid_number_of_players_1) {
     EXPECT_THROW(sh::Game game(std::vector<std::string>(15, "")), std::runtime_error);
 }
 
+//--------------- get by name ------------------------------------------------------------------------------------------
 TEST(game_logic_test, game_get_player_by_name) {
     sh::Game game({"A", "B", "C", "D", "E", "F", "G"});
     const auto cgame = game;
@@ -58,6 +60,7 @@ TEST(game_logic_test, game_get_player_by_name) {
     EXPECT_EQ(cgame.getPlayerByName("Z"), std::nullopt);
 }
 
+//--------------- get set roles ----------------------------------------------------------------------------------------
 TEST(game_logic_test, get_set_president) {
     using namespace sh;
     using Role = Player::GovernmentRole;
@@ -74,13 +77,14 @@ TEST(game_logic_test, set_role_dead) {
     Game game({"A", "B", "C", "D", "E", "F", "G"});
     EXPECT_TRUE(game.killPlayer("A"));
     EXPECT_EQ(game.setPlayerRole("A", Role::Chancellor), SetRoleStatus::PlayerIsDead);
+    EXPECT_FALSE((*game.getPlayerByName("A"))->role.has_value());
 }
 
 TEST(game_logic_test, set_same_president) {
     using namespace sh;
     using Role = Player::GovernmentRole;
     Game game({"A", "B", "C", "D", "E", "F", "G"});
-    const Player pres = game.getPlayers().front();
+    const Player &pres = game.getPlayers().front();
     EXPECT_EQ(game.setPlayerRole(pres.name, Role::President), SetRoleStatus::Success);
     EXPECT_EQ(game.setPlayerRole(pres.name, Role::President), SetRoleStatus::Ineligible);
 }
@@ -92,6 +96,18 @@ TEST(game_logic_test, set_role_player_not_found) {
     EXPECT_FALSE(game.setPlayerRole("Z", Role::Chancellor).has_value());
 }
 
+TEST(game_logic_test, set_new_president) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    const Player &pres = game.getPlayers().front();
+    EXPECT_EQ(game.setPlayerRole(pres.name, Role::President), SetRoleStatus::Success);
+    const Player &newPres = game.getPlayers().back();
+    EXPECT_EQ(game.setPlayerRole(newPres.name, Role::President), SetRoleStatus::Success);
+    EXPECT_EQ(newPres.role, Role::President);
+    EXPECT_FALSE(pres.role.has_value());
+}
+
 TEST(game_logic_test, get_set_chancellor) {
     using namespace sh;
     using Role = Player::GovernmentRole;
@@ -99,5 +115,27 @@ TEST(game_logic_test, get_set_chancellor) {
     const Player &chancellor = game.getPlayers().front();
     EXPECT_EQ(game.setPlayerRole(chancellor.name, Role::Chancellor), SetRoleStatus::Success);
     EXPECT_EQ(chancellor.role, Role::Chancellor);
+}
 
+TEST(game_logic_test, set_chancellor_ineligible) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    EXPECT_EQ(game.setPlayerRole("A", Role::President), SetRoleStatus::Success);
+    EXPECT_EQ(game.setPlayerRole("B", Role::Chancellor), SetRoleStatus::Success);
+    EXPECT_EQ(game.setPlayerRole("A", Role::Chancellor), SetRoleStatus::Ineligible);
+    EXPECT_EQ((*game.getPlayerByName("A"))->role, Role::President);
+    EXPECT_EQ(game.setPlayerRole("B", Role::Chancellor), SetRoleStatus::Ineligible);
+}
+
+TEST(game_logic_test, set_new_chanellor) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    const Player &chancellor = game.getPlayers().front();
+    EXPECT_EQ(game.setPlayerRole(chancellor.name, Role::Chancellor), SetRoleStatus::Success);
+    const Player &newChancellor = game.getPlayers().back();
+    EXPECT_EQ(game.setPlayerRole(newChancellor.name, Role::Chancellor), SetRoleStatus::Success);
+    EXPECT_EQ(newChancellor.role, Role::Chancellor);
+    EXPECT_FALSE(chancellor.role.has_value());
 }
