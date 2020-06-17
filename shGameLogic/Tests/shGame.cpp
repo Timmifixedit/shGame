@@ -139,3 +139,11 @@ TEST(game_logic_test, set_new_chanellor) {
     EXPECT_EQ(newChancellor.role, Role::Chancellor);
     EXPECT_FALSE(chancellor.role.has_value());
 }
+
+//--------------- get set roles ----------------------------------------------------------------------------------------
+TEST(game_logic_test, kill_player) {
+    using namespace sh;
+    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    EXPECT_TRUE(game.killPlayer("A"));
+    EXPECT_TRUE((*game.getPlayerByName("A"))->isDead());
+}
