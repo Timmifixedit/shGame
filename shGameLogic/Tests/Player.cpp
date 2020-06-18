@@ -67,3 +67,25 @@ TEST(player_test, unequal4) {
     p1.kill();
     EXPECT_NE(p1, p2);
 }
+
+TEST(player_test, elect) {
+    using namespace sh;
+    Player p1("1", Player::Type::Liberal, Player::GovernmentRole::President);
+    p1.elect();
+    EXPECT_TRUE(p1.isInGovernment());
+}
+
+TEST(player_test, elect_no_rolo) {
+    using namespace sh;
+    Player p1("1", Player::Type::Liberal);
+    EXPECT_THROW(p1.elect(), std::runtime_error);
+}
+
+TEST(player_test, remove_from_gov) {
+    using namespace sh;
+    Player p1("1", Player::Type::Liberal, Player::GovernmentRole::President);
+    p1.elect();
+    p1.removeFromGovernment();
+    EXPECT_FALSE(p1.isInGovernment());
+    EXPECT_FALSE(p1.role.has_value());
+}

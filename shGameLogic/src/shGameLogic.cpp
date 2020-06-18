@@ -37,6 +37,11 @@ namespace sh {
         government = true;
     }
 
+    void Player::removeFromGovernment() {
+        role.reset();
+        government = false;
+    }
+
     Game::Game(const std::vector<std::string> &players, RuleSet rules) :
         players(assignPlayers(players)), rules(std::move(rules)),
         policyBoard({{CardType::Liberal, 0}, {CardType::Fascist, 0}}) {
@@ -222,6 +227,34 @@ namespace sh {
             if (rule->condition(*this, trigger)) {
                 notifyAll(rule->type);
             }
+        }
+    }
+
+    auto Game::getGovernment() -> std::vector<std::vector<Player>::iterator> {
+        std::vector<std::vector<Player>::iterator> ret;
+        ret.reserve(players.size());
+        for (auto it = players.begin(); it != players.end(); ++it) {
+            if (it->isInGovernment()) {
+                ret.emplace_back(it);
+            }
+        }
+
+        return ret;
+    }
+
+    void Game::electGovernment() {
+        for (auto govPlayer : getGovernment()) {
+            govPlayer->removeFromGovernment();
+        }
+
+        auto pres = getPlayerByCurrentRole(Player::GovernmentRole::President);
+        auto chancellor = getPlayerByCurrentRole(Player::GovernmentRole::Chancellor);
+        if (pres.has_value()) {
+            (*pres)->elect();
+        }
+
+        if (chancellor.has_value()) {
+            (*chancellor)->elect();
         }
     }
 }

@@ -179,10 +179,44 @@ TEST(game_logic_test, set_next_pres_all_dead) {
     EXPECT_THROW(game.setNextPresident(), std::runtime_error);
 }
 
-//--------------- get set roles ----------------------------------------------------------------------------------------
+//--------------- kill player ------------------------------------------------------------------------------------------
 TEST(game_logic_test, kill_player) {
     using namespace sh;
     Game game({"A", "B", "C", "D", "E", "F", "G"}, {});
     EXPECT_TRUE(game.killPlayer("A"));
     EXPECT_TRUE((*game.getPlayerByName("A"))->isDead());
+}
+
+TEST(game_logic_test, kill_player_not_found) {
+    using namespace sh;
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, {});
+    EXPECT_FALSE(game.killPlayer("Z"));
+}
+
+//--------------- election ---------------------------------------------------------------------------------------------
+TEST(game_logic_test, elect_government) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, {});
+    EXPECT_EQ(game.setPlayerRole("A", Role::President), SetRoleStatus::Success);
+    EXPECT_EQ(game.setPlayerRole("B", Role::Chancellor), SetRoleStatus::Success);
+    game.electGovernment();
+    EXPECT_TRUE((*game.getPlayerByName("A"))->isInGovernment());
+    EXPECT_TRUE((*game.getPlayerByName("B"))->isInGovernment());
+}
+
+TEST(game_logic_test, elect_new_government) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, {});
+    EXPECT_EQ(game.setPlayerRole("A", Role::President), SetRoleStatus::Success);
+    EXPECT_EQ(game.setPlayerRole("B", Role::Chancellor), SetRoleStatus::Success);
+    game.electGovernment();
+    EXPECT_EQ(game.setPlayerRole("C", Role::President), SetRoleStatus::Success);
+    EXPECT_EQ(game.setPlayerRole("D", Role::Chancellor), SetRoleStatus::Success);
+    game.electGovernment();
+    EXPECT_FALSE((*game.getPlayerByName("A"))->isInGovernment());
+    EXPECT_FALSE((*game.getPlayerByName("B"))->isInGovernment());
+    EXPECT_TRUE((*game.getPlayerByName("C"))->isInGovernment());
+    EXPECT_TRUE((*game.getPlayerByName("D"))->isInGovernment());
 }

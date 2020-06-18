@@ -48,6 +48,8 @@ namespace sh {
 
         void elect();
 
+        void removeFromGovernment();
+
         [[nodiscard]] bool isDead() const;
         [[nodiscard]] bool isInGovernment() const;
 
@@ -126,6 +128,8 @@ namespace sh {
         auto GetPlayerByCurrentRole(Player::GovernmentRole role) const -> std::optional<std::vector<Player>::const_iterator>;
         auto getPlayerByCurrentRole(Player::GovernmentRole role) -> std::optional<std::vector<Player>::iterator>;
 
+        auto getGovernment() -> std::vector<std::vector<Player>::iterator>;
+
         /**
          * Sets the role of the player with the specified role
          * @param playerName name of the player
@@ -154,6 +158,8 @@ namespace sh {
          * @param handler the handler handling the event
          */
         void subscribe(const GameEventHandler &handler);
+
+        void electGovernment();
 
     private:
         friend class CardRange;
