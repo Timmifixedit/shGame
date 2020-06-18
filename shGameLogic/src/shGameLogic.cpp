@@ -24,9 +24,9 @@ namespace sh {
         return !(*this == other);
     }
 
-    Game::Game(const std::vector<std::string> &players) : players(assignPlayers(players)),
-                                                          policyBoard({{CardType::Liberal, 0},
-                                                                       {CardType::Fascist, 0}}) {
+    Game::Game(const std::vector<std::string> &players, RuleSet rules) :
+        players(assignPlayers(players)), rules(std::move(rules)),
+        policyBoard({{CardType::Liberal, 0}, {CardType::Fascist, 0}}) {
         restockCardPile();
     }
 
@@ -169,9 +169,7 @@ namespace sh {
         }
 
         (*player)->kill();
-        if ((*player)->type == Player::Type::Hitler) {
-            notifyAll(PolicyEventType::LiberalsWin);
-        }
+        generateEventsAndNotify(GameEventTrigger::PlayerExecuted);
 
         return true;
     }
@@ -196,23 +194,21 @@ namespace sh {
         setPlayerRole((*currPres)->name, Player::GovernmentRole::President);
     }
 
-    void Game::subscribe(const PolicyEventHandler &handler) {
+    void Game::subscribe(const GameEventHandler &handler) {
         handlers.emplace_back(handler);
     }
 
-    void Game::notifyAll(PolicyEventType type) const {
+    void Game::notifyAll(GameEventType type) const {
         for (const auto &handler : handlers) {
             handler(type);
         }
     }
 
-    void Game::generateEventsAndNotify() const {
-        for (const auto &player : players) {
-            if (player.type == Player::Type::Hitler && player.isDead()) {
-                notifyAll(PolicyEventType::LiberalsWin);
+    void Game::generateEventsAndNotify(GameEventTrigger trigger) const {
+        for (const auto &rule : rules) {
+            if (rule->condition(*this, trigger)) {
+                notifyAll(rule->type);
             }
         }
-
-
     }
 }

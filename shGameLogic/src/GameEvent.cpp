@@ -4,7 +4,7 @@
 
 #include "GameEvent.h"
 namespace sh {
-    GameEvent::GameEvent(GameEvent::Type type) : type(type) {}
+    GameEvent::GameEvent(GameEventType type) : type(type) {}
 
     auto GameEvent::getPolicyNumbers(const Game &gameState) -> std::pair<unsigned int, unsigned int> {
         auto getNumPolicies = [&gameState] (CardType cardType) {
@@ -19,10 +19,14 @@ namespace sh {
         return {getNumPolicies(CardType::Liberal), getNumPolicies(CardType::Fascist)};
     }
 
-    LiberalsWin::LiberalsWin() : GameEvent(Type::LiberalsWin) {}
+    LiberalsWin::LiberalsWin() : GameEvent(GameEventType::LiberalsWin) {}
 
-    bool LiberalsWin::condition(const Game &gameState, Trigger) const {
+    bool LiberalsWin::condition(const Game &gameState, GameEventTrigger trigger) const {
         constexpr unsigned int NUM_LIB_CARDS_WIN = 5;
+        if (trigger != GameEventTrigger::LiberalPolicyPlayed && trigger != GameEventTrigger::PlayerExecuted) {
+            return false;
+        }
+
         unsigned int libCards = this->getPolicyNumbers(gameState).first;
         bool hitlerDead = false;
         for (const auto &player : gameState.getPlayers()) {
@@ -35,11 +39,15 @@ namespace sh {
         return hitlerDead || libCards >= NUM_LIB_CARDS_WIN;
     }
 
-    FascistsWin::FascistsWin() : GameEvent(Type::FascistsWin) {}
+    FascistsWin::FascistsWin() : GameEvent(GameEventType::FascistsWin) {}
 
-    bool FascistsWin::condition(const Game &gameState, Trigger) const {
+    bool FascistsWin::condition(const Game &gameState, GameEventTrigger trigger) const {
         constexpr unsigned int NUM_FAS_CARDS_WIN = 6;
-        constexpr unsigned int NUM_HITLER_ELECTION_THRESH = 4;
+        constexpr unsigned int NUM_HITLER_ELECTION_THRESH = 3;
+        if (trigger != GameEventTrigger::FascistPolicyPlayed && trigger != GameEventTrigger::PlayerElected) {
+            return false;
+        }
+
         unsigned int fasCards = this->getPolicyNumbers(gameState).second;
         bool hitlerChancellor = false;
         for (const auto &player : gameState.getPlayers()) {
@@ -49,38 +57,40 @@ namespace sh {
             }
         }
 
-        return (hitlerChancellor && fasCards >= NUM_HITLER_ELECTION_THRESH) || fasCards >= NUM_FAS_CARDS_WIN;
+        return (hitlerChancellor && fasCards >= NUM_HITLER_ELECTION_THRESH && trigger == GameEventTrigger::PlayerElected) ||
+                fasCards >= NUM_FAS_CARDS_WIN;
     }
 
-    InvestigateLoyalty::InvestigateLoyalty() : GameEvent(Type::InvestigateLoyalty) {}
+    InvestigateLoyalty::InvestigateLoyalty() : GameEvent(GameEventType::InvestigateLoyalty) {}
 
-    bool InvestigateLoyalty::condition(const Game &gameState, Trigger trigger) const {
+    bool InvestigateLoyalty::condition(const Game &gameState, GameEventTrigger trigger) const {
         constexpr unsigned int NUM_FAS_CARDS_LOYAL = 2;
         unsigned int fasCards = this->getPolicyNumbers(gameState).second;
-        return trigger == Trigger::FascistPolicyPlayed && fasCards == NUM_FAS_CARDS_LOYAL;
+        return trigger == GameEventTrigger::FascistPolicyPlayed && fasCards == NUM_FAS_CARDS_LOYAL;
     }
 
-    SpecialElection::SpecialElection() : GameEvent(Type::SpecialElection) {}
+    SpecialElection::SpecialElection() : GameEvent(GameEventType::SpecialElection) {}
 
-    bool SpecialElection::condition(const Game &gameState, Trigger trigger) const {
+    bool SpecialElection::condition(const Game &gameState, GameEventTrigger trigger) const {
         constexpr unsigned int NUM_FAS_CARDS_ELECTION = 3;
         unsigned int fasCards = this->getPolicyNumbers(gameState).second;
-        return trigger == Trigger::FascistPolicyPlayed && fasCards == NUM_FAS_CARDS_ELECTION;
+        return trigger == GameEventTrigger::FascistPolicyPlayed && fasCards == NUM_FAS_CARDS_ELECTION;
     }
 
-    Execution::Execution() : GameEvent(Type::Execution) {}
+    Execution::Execution() : GameEvent(GameEventType::Execution) {}
 
-    bool Execution::condition(const Game &gameState, Trigger trigger) const {
+    bool Execution::condition(const Game &gameState, GameEventTrigger trigger) const {
         constexpr unsigned int NUM_FAS_CARDS_EXEC = 4;
         unsigned int fasCards = this->getPolicyNumbers(gameState).second;
-        return trigger == Trigger::FascistPolicyPlayed && fasCards == NUM_FAS_CARDS_EXEC;
+        return trigger == GameEventTrigger::FascistPolicyPlayed && fasCards == NUM_FAS_CARDS_EXEC;
     }
 
-    Veto::Veto() : GameEvent(Type::Veto) {}
+    Veto::Veto() : GameEvent(GameEventType::Veto) {}
 
-    bool Veto::condition(const Game &gameState, Trigger) const {
+    bool Veto::condition(const Game &gameState, GameEventTrigger) const {
         constexpr unsigned int NUM_FAS_CARDS_VETO = 5;
         unsigned int fasCards = this->getPolicyNumbers(gameState).second;
         return fasCards >= NUM_FAS_CARDS_VETO;
     }
+
 }

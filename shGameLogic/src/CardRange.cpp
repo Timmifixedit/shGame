@@ -57,9 +57,9 @@ namespace sh {
         return false;
     }
 
-    auto CardRange::applyToGame() -> std::pair<bool, std::optional<PolicyEventType>> {
+    bool CardRange::applyToGame() {
         if (applied) {
-            return {false, std::nullopt};
+            return false;
         }
 
         applied = true;
@@ -75,7 +75,7 @@ namespace sh {
             game.cardPile.emplace_back(*it);
         }
 
-        return {true, getOccuringEvent()};
+        return true;
     }
 
     CardRange::~CardRange() {
@@ -104,43 +104,5 @@ namespace sh {
 
     bool CardRange::alreadyApplied() const {
         return applied;
-    }
-
-    auto CardRange::getOccuringEvent() const -> std::optional<PolicyEventType> {
-        constexpr unsigned int NUM_LIB_CARDS_WIN = 5;
-        constexpr unsigned int NUM_FAS_CARDS_WIN = 6;
-        constexpr unsigned int NUM_FAS_CARDS_VETO = 5;
-        constexpr unsigned int NUM_FAS_CARDS_EXEC = 4;
-        constexpr unsigned int NUM_FAS_CARDS_ELECTION = 3;
-        constexpr unsigned int NUM_FAS_CARDS_LOYAL = 2;
-        if (!policy.has_value()) {
-            return {};
-        }
-
-        unsigned int criticalCards = game.getPolicies().find(*policy)->second;
-        switch (*policy) {
-            case CardType::Fascist:
-                if (criticalCards == NUM_FAS_CARDS_WIN) {
-                    return PolicyEventType::FascistsWin;
-                } else if (criticalCards >= NUM_FAS_CARDS_VETO) {
-                    return PolicyEventType::Veto;
-                } else if (criticalCards == NUM_FAS_CARDS_EXEC) {
-                    return PolicyEventType::Execution;
-                } else if (criticalCards == NUM_FAS_CARDS_ELECTION) {
-                    return PolicyEventType::SpecialElection;
-                } else if (criticalCards == NUM_FAS_CARDS_LOYAL) {
-                    return PolicyEventType::InvestigateLoyalty;
-                }
-
-                break;
-            case CardType::Liberal:
-                if (criticalCards == NUM_LIB_CARDS_WIN) {
-                    return PolicyEventType::LiberalsWin;
-                }
-
-                break;
-        }
-
-        return {};
     }
 }

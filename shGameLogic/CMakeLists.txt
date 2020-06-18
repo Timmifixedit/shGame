@@ -21,6 +21,7 @@ set(SOURCES
         ${CMAKE_SOURCE_DIR}/src/util.cpp
         ${CMAKE_SOURCE_DIR}/src/CardRange.cpp
         ${CMAKE_SOURCE_DIR}/src/GameEvent.cpp
+        ${CMAKE_SOURCE_DIR}/src/rules.cpp
         )
 include_directories(${CMAKE_SOURCE_DIR}/src)
 

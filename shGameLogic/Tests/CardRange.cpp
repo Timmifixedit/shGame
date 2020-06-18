@@ -8,10 +8,11 @@
 #include "GlobalTypes.h"
 #include "shGameLogic.h"
 #include "CardRange.h"
+#include "rules.h"
 
 TEST(card_range_test, view_only) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     std::vector<CardType> cardPile = game.getCardPile();
     CardRange topCards = game.drawCards(3);
     EXPECT_EQ(topCards.size(), 3);
@@ -28,7 +29,7 @@ TEST(card_range_test, view_only) {
 
 TEST(card_range_test, discard_and_return) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     unsigned int nOfCards = game.getCardPile().size();
     CardRange topCards = game.drawCards(3);
     std::vector<CardType> discardedCards;
@@ -39,7 +40,7 @@ TEST(card_range_test, discard_and_return) {
 
     EXPECT_EQ(topCards.size(), 1);
     CardType remainingCard = *topCards.begin();
-    EXPECT_TRUE(topCards.applyToGame().first);
+    EXPECT_TRUE(topCards.applyToGame());
     EXPECT_EQ(game.getCardPile().back(), remainingCard);
     EXPECT_EQ(game.getCardPile().size(), nOfCards - 2);
     EXPECT_EQ(game.getDiscardCardPile(), discardedCards);
@@ -47,14 +48,14 @@ TEST(card_range_test, discard_and_return) {
 
 TEST(card_range_test, policy_and_return) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     std::vector<CardType> cardPileOneLess = game.getCardPile();
     cardPileOneLess.pop_back();
     CardRange topCards = game.drawCards(3);
     CardType policy = topCards(0);
     EXPECT_TRUE(topCards.selectForPolicy(topCards(0)));
     EXPECT_EQ(topCards.size(), 2);
-    EXPECT_TRUE(topCards.applyToGame().first);
+    EXPECT_TRUE(topCards.applyToGame());
     EXPECT_EQ(cardPileOneLess, game.getCardPile());
     EXPECT_TRUE(game.getDiscardCardPile().empty());
     EXPECT_EQ(game.getPolicies().find(policy)->second, 1);
@@ -64,7 +65,7 @@ TEST(card_range_test, policy_and_return) {
 
 TEST(car_range_test, discard_not_found) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     CardRange topCards = game.drawCards(3);
     while (topCards.size() > 0) {
         EXPECT_TRUE(topCards.discard(topCards(0)));
@@ -76,15 +77,15 @@ TEST(car_range_test, discard_not_found) {
 
 TEST(card_range_test, discard_applied) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     CardRange topCards = game.drawCards(3);
-    EXPECT_TRUE(topCards.applyToGame().first);
+    EXPECT_TRUE(topCards.applyToGame());
     EXPECT_FALSE(topCards.discard(topCards(0)));
 }
 
 TEST(card_range_test, policy_not_found) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     CardRange topCards = game.drawCards(3);
     while (topCards.size() > 0) {
         EXPECT_TRUE(topCards.discard(topCards(0)));
@@ -96,23 +97,23 @@ TEST(card_range_test, policy_not_found) {
 
 TEST(card_range_test, policy_applied) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     CardRange topCards = game.drawCards(3);
-    EXPECT_TRUE(topCards.applyToGame().first);
+    EXPECT_TRUE(topCards.applyToGame());
     EXPECT_FALSE(topCards.selectForPolicy(topCards(0)));
 }
 
 TEST(card_range_test, double_apply) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     CardRange topCards = game.drawCards(3);
-    EXPECT_TRUE(topCards.applyToGame().first);
-    EXPECT_FALSE(topCards.applyToGame().first);
+    EXPECT_TRUE(topCards.applyToGame());
+    EXPECT_FALSE(topCards.applyToGame());
 }
 
 TEST(card_range_test, raii_not_applied) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     std::vector<CardType> cardPile = game.getCardPile();
     {
         CardRange topCards = game.drawCards(3);
@@ -128,7 +129,7 @@ TEST(card_range_test, raii_not_applied) {
 
 TEST(card_range_test, raii_applied) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     std::size_t numCards = game.getCardPile().size();
     std::optional<CardType> policy;
     std::optional<CardType> discarded;
@@ -138,7 +139,7 @@ TEST(card_range_test, raii_applied) {
         EXPECT_TRUE(topCards.discard(topCards(0)));
         policy = topCards(0);
         EXPECT_TRUE(topCards.selectForPolicy(topCards(0)));
-        EXPECT_TRUE(topCards.applyToGame().first);
+        EXPECT_TRUE(topCards.applyToGame());
     }
 
     EXPECT_EQ(game.getCardPile().size(), numCards - 2);
@@ -151,7 +152,7 @@ TEST(card_range_test, raii_applied) {
 
 TEST(car_range_test, applied_status) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"});
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     CardRange topCards = game.drawCards(3);
     EXPECT_FALSE(topCards.alreadyApplied());
     topCards.applyToGame();

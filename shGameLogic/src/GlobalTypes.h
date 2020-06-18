@@ -3,10 +3,9 @@
 //
 
 #ifndef SHGAME_GLOBALTYPES_H
-#define  SHGAME_GLOBALTYPES_H
-#include <functional>
+#define SHGAME_GLOBALTYPES_H
 
-namespace sh{
+namespace sh {
     /**
      * Type of policy cards
      */
@@ -14,16 +13,18 @@ namespace sh{
         Fascist, Liberal
     };
 
-    enum class PolicyEventType {
+    enum class SetRoleStatus {
+        PlayerIsDead, Ineligible, Success
+    };
+
+    enum class GameEventTrigger {
+        FascistPolicyPlayed, LiberalPolicyPlayed, PlayerExecuted, PlayerElected
+    };
+
+    enum class GameEventType {
         LiberalsWin, FascistsWin,
         InvestigateLoyalty, Execution,
         PolicyPeak, SpecialElection, Veto
-    };
-
-    using PolicyEventHandler = std::function<void(PolicyEventType)>;
-
-    enum class SetRoleStatus {
-        PlayerIsDead, Ineligible, Success
     };
 }
 #endif //SHGAME_GLOBALTYPES_H

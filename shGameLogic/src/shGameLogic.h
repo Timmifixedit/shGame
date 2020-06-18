@@ -12,6 +12,7 @@
 
 #include "GlobalTypes.h"
 #include "CardRange.h"
+#include "GameEvent.h"
 
 namespace sh {
     constexpr unsigned int NUM_LIB_CARDS = 6;
@@ -19,6 +20,12 @@ namespace sh {
     constexpr unsigned int MIN_NUM_PLAYERS = 5;
     constexpr unsigned int MAX_NUM_PLAYERS = 10;
     class CardRange;
+    class GameEvent;
+
+    using GameEventPtr = std::shared_ptr<GameEvent>;
+    using GameEventHandler = std::function<void(GameEventType)>;
+    using RuleSet = std::vector<GameEventPtr>;
+
     /**
      * Represents a player
      */
@@ -59,7 +66,7 @@ namespace sh {
          * @param players list of player names. Has to be lower than MAX_NUM_PLAYERS and higher than MIN_NUM_PLAYERS
          * @throws std::runtime_error if illegal number of players
          */
-        explicit Game(const std::vector<std::string> &players);
+        Game(const std::vector<std::string> &players, RuleSet rules);
 
         /**
          * Returns the number of liberal players in the game according to the game rules
@@ -142,19 +149,20 @@ namespace sh {
          * Subscribes the given event handler to game events
          * @param handler the handler handling the event
          */
-        void subscribe(const PolicyEventHandler &handler);
+        void subscribe(const GameEventHandler &handler);
 
     private:
         friend class CardRange;
         static std::vector<Player> assignPlayers(const std::vector<std::string> &pNames);
         void restockCardPile();
-        void notifyAll(PolicyEventType type) const;
-        void generateEventsAndNotify() const;
+        void notifyAll(GameEventType type) const;
+        void generateEventsAndNotify(GameEventTrigger trigger) const;
         std::vector<Player> players;
+        RuleSet rules;
         std::map<CardType, unsigned int> policyBoard;
         std::vector<CardType> cardPile;
         std::vector<CardType> discardPile;
-        std::vector<PolicyEventHandler> handlers;
+        std::vector<GameEventHandler> handlers;
     };
 }
 
