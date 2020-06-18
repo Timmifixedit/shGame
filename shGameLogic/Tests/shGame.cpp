@@ -8,13 +8,12 @@
 #include <optional>
 
 #include "shGameLogic.h"
-#include "rules.h"
 
 //--------------- ctor -------------------------------------------------------------------------------------------------
 
 TEST(game_logic_game_test, ctor_players) {
     std::vector<std::string> names = {"A", "B", "C", "D", "E", "F", "G"};
-    sh::Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(sh::RuleSetType::Standard));
+    sh::Game game({"A", "B", "C", "D", "E", "F", "G"}, {});
     EXPECT_EQ(game.getPolicies().find(sh::CardType::Fascist)->second, 0);
     EXPECT_EQ(game.getPolicies().find(sh::CardType::Liberal)->second, 0);
     int fascist = 0;
