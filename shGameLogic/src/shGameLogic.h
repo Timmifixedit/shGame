@@ -138,15 +138,23 @@ namespace sh {
          */
         void setNextPresident();
 
+        /**
+         * Subscribes the given event handler to game events
+         * @param handler the handler handling the event
+         */
+        void subscribe(const PolicyEventHandler &handler);
 
     private:
         friend class CardRange;
         static std::vector<Player> assignPlayers(const std::vector<std::string> &pNames);
         void restockCardPile();
+        void notifyAll(PolicyEventType type) const;
+        void generateEventsAndNotify() const;
         std::vector<Player> players;
         std::map<CardType, unsigned int> policyBoard;
         std::vector<CardType> cardPile;
         std::vector<CardType> discardPile;
+        std::vector<PolicyEventHandler> handlers;
     };
 }
 

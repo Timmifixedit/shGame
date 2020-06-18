@@ -57,7 +57,7 @@ namespace sh {
         return false;
     }
 
-    auto CardRange::applyToGame() -> std::pair<bool, std::optional<PolicyEvent>> {
+    auto CardRange::applyToGame() -> std::pair<bool, std::optional<PolicyEventType>> {
         if (applied) {
             return {false, std::nullopt};
         }
@@ -106,7 +106,7 @@ namespace sh {
         return applied;
     }
 
-    auto CardRange::getOccuringEvent() const -> std::optional<PolicyEvent> {
+    auto CardRange::getOccuringEvent() const -> std::optional<PolicyEventType> {
         constexpr unsigned int NUM_LIB_CARDS_WIN = 5;
         constexpr unsigned int NUM_FAS_CARDS_WIN = 6;
         constexpr unsigned int NUM_FAS_CARDS_VETO = 5;
@@ -121,21 +121,21 @@ namespace sh {
         switch (*policy) {
             case CardType::Fascist:
                 if (criticalCards == NUM_FAS_CARDS_WIN) {
-                    return PolicyEvent::FascistsWin;
+                    return PolicyEventType::FascistsWin;
                 } else if (criticalCards >= NUM_FAS_CARDS_VETO) {
-                    return PolicyEvent::Veto;
+                    return PolicyEventType::Veto;
                 } else if (criticalCards == NUM_FAS_CARDS_EXEC) {
-                    return PolicyEvent::Execution;
+                    return PolicyEventType::Execution;
                 } else if (criticalCards == NUM_FAS_CARDS_ELECTION) {
-                    return PolicyEvent::SpecialElection;
+                    return PolicyEventType::SpecialElection;
                 } else if (criticalCards == NUM_FAS_CARDS_LOYAL) {
-                    return PolicyEvent::InvestigateLoyalty;
+                    return PolicyEventType::InvestigateLoyalty;
                 }
 
                 break;
             case CardType::Liberal:
                 if (criticalCards == NUM_LIB_CARDS_WIN) {
-                    return PolicyEvent::LiberalsWin;
+                    return PolicyEventType::LiberalsWin;
                 }
 
                 break;

@@ -169,6 +169,10 @@ namespace sh {
         }
 
         (*player)->kill();
+        if ((*player)->type == Player::Type::Hitler) {
+            notifyAll(PolicyEventType::LiberalsWin);
+        }
+
         return true;
     }
 
@@ -190,5 +194,25 @@ namespace sh {
         } while ((*currPres)->isDead());
 
         setPlayerRole((*currPres)->name, Player::GovernmentRole::President);
+    }
+
+    void Game::subscribe(const PolicyEventHandler &handler) {
+        handlers.emplace_back(handler);
+    }
+
+    void Game::notifyAll(PolicyEventType type) const {
+        for (const auto &handler : handlers) {
+            handler(type);
+        }
+    }
+
+    void Game::generateEventsAndNotify() const {
+        for (const auto &player : players) {
+            if (player.type == Player::Type::Hitler && player.isDead()) {
+                notifyAll(PolicyEventType::LiberalsWin);
+            }
+        }
+
+
     }
 }

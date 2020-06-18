@@ -46,7 +46,7 @@ namespace sh{
          * cards marked for discard are added to the discard pile. Remaining cards are put back to the card pile
          * @return false if this method has already been called, true otherwise
          */
-        auto applyToGame() -> std::pair<bool, std::optional<PolicyEvent>>;
+        auto applyToGame() -> std::pair<bool, std::optional<PolicyEventType>>;
 
         /**
          * Whether the card range has been applied to the game
@@ -76,7 +76,7 @@ namespace sh{
         CardType operator()(std::size_t i) const;
 
     private:
-        [[nodiscard]] auto getOccuringEvent() const -> std::optional<PolicyEvent>;
+        [[nodiscard]] auto getOccuringEvent() const -> std::optional<PolicyEventType>;
         Game &game;
         std::vector<CardType> initialState;
         std::deque<CardType> cards;
