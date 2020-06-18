@@ -161,6 +161,8 @@ namespace sh {
 
         void electGovernment();
 
+        auto getHitler() const -> std::vector<Player>::const_iterator;
+
     private:
         friend class CardRange;
         static std::vector<Player> assignPlayers(const std::vector<std::string> &pNames);

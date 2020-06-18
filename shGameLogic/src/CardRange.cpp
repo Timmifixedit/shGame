@@ -65,6 +65,9 @@ namespace sh {
         applied = true;
         if (policy.has_value()) {
             game.policyBoard.find(*policy)->second++;
+            auto trigger = policy == CardType::Fascist ? GameEventTrigger::FascistPolicyPlayed :
+                    GameEventTrigger::LiberalPolicyPlayed;
+            game.generateEventsAndNotify(trigger);
         }
 
         for (auto card : discarded) {

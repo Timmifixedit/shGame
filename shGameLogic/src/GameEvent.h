@@ -33,10 +33,6 @@ namespace sh {
         explicit GameEvent(GameEventType type);
     };
 
-    using GameEventPtr = std::shared_ptr<GameEvent>;
-    using GameEventHandler = std::function<void(GameEventType)>;
-    using RuleSet = std::vector<GameEventPtr>;
-
     class LiberalsWin : public GameEvent {
     public:
         LiberalsWin();

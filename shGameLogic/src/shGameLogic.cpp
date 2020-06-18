@@ -257,4 +257,14 @@ namespace sh {
             (*chancellor)->elect();
         }
     }
+
+    auto Game::getHitler() const -> std::vector<Player>::const_iterator {
+        for (auto it = players.cbegin(); it != players.cend(); ++it) {
+            if(it->type == Player::Type::Hitler) {
+                return it;
+            }
+        }
+
+        throw std::runtime_error("No player is Hitler. As if that's a bad thing...");
+    }
 }
