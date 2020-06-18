@@ -46,7 +46,10 @@ namespace sh {
          */
         void kill();
 
+        void elect();
+
         [[nodiscard]] bool isDead() const;
+        [[nodiscard]] bool isInGovernment() const;
 
         bool operator==(const Player &other) const;
         bool operator!=(const Player &other) const;
@@ -56,6 +59,7 @@ namespace sh {
         std::optional<GovernmentRole> role;
     private:
         bool dead = false;
+        bool government = false;
     };
 
 

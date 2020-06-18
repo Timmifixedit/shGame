@@ -17,11 +17,24 @@ namespace sh {
     }
 
     bool Player::operator==(const Player &other) const {
-        return name == other.name && role == other.role && type == other.type && isDead() == other.isDead();
+        return name == other.name && role == other.role && type == other.type &&
+            isDead() == other.isDead() && government == other.isInGovernment();
     }
 
     bool Player::operator!=(const Player &other) const {
         return !(*this == other);
+    }
+
+    bool Player::isInGovernment() const {
+        return government;
+    }
+
+    void Player::elect() {
+        if (!role.has_value()) {
+            throw std::runtime_error("Player has no government role");
+        }
+
+        government = true;
     }
 
     Game::Game(const std::vector<std::string> &players, RuleSet rules) :
@@ -147,8 +160,8 @@ namespace sh {
              return SetRoleStatus::PlayerIsDead;
          }
 
-         bool invalidChancellor = role == Role::Chancellor && (*newRoleBearer)->role.has_value();
-         bool invalidPresident = role == Role::President && (*newRoleBearer)->role == Role::President;
+         bool invalidChancellor = role == Role::Chancellor && (*newRoleBearer)->isInGovernment();
+         bool invalidPresident = newRoleBearer == getPlayerByCurrentRole(Player::GovernmentRole::President);
          if (invalidChancellor || invalidPresident) {
              return SetRoleStatus::Ineligible;
          }

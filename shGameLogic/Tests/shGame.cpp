@@ -124,6 +124,7 @@ TEST(game_logic_test, set_chancellor_ineligible) {
     Game game({"A", "B", "C", "D", "E", "F", "G"}, {});
     EXPECT_EQ(game.setPlayerRole("A", Role::President), SetRoleStatus::Success);
     EXPECT_EQ(game.setPlayerRole("B", Role::Chancellor), SetRoleStatus::Success);
+    (*game.getPlayerByCurrentRole(Role::Chancellor))->elect();
     EXPECT_EQ(game.setPlayerRole("A", Role::Chancellor), SetRoleStatus::Ineligible);
     EXPECT_EQ((*game.getPlayerByName("A"))->role, Role::President);
     EXPECT_EQ(game.setPlayerRole("B", Role::Chancellor), SetRoleStatus::Ineligible);
