@@ -71,3 +71,65 @@ TEST(game_event_test, liberals_kill_hitler) {
     EXPECT_TRUE(game.killPlayer(game.getHitler()->name));
     EXPECT_TRUE(success);
 }
+
+TEST(game_event_test, fascists_win) {
+    using namespace sh;
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
+    bool success = false;
+    bool succeedNow = false;
+    auto handler = [&success, &succeedNow](GameEventType type) {
+        if (!succeedNow && type == GameEventType::FascistsWin) {
+            FAIL();
+        } else if (type == GameEventType::FascistsWin && succeedNow) {
+            success = true;
+        }
+    };
+
+    game.subscribe(handler);
+    for (int i = 0; i < 6; ++i) {
+        if (i == 5) {
+            succeedNow = true;
+        }
+
+        CardRange allCards = game.drawCards(game.getCardPile().size());
+        EXPECT_TRUE(allCards.selectForPolicy(CardType::Fascist));
+        EXPECT_TRUE(allCards.applyToGame());
+    }
+
+    EXPECT_TRUE(success);
+}
+
+TEST(game_event_test, hilter_wins) {
+    using namespace sh;
+    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
+    bool success = false;
+    bool succeedNow = false;
+    auto handler = [&success, &succeedNow](GameEventType type) {
+        if (!succeedNow && type == GameEventType::FascistsWin) {
+            FAIL();
+        } else if (type == GameEventType::FascistsWin && succeedNow) {
+            success = true;
+        }
+    };
+
+    game.subscribe(handler);
+    for (int i = 0; i < 3; ++i) {
+        EXPECT_TRUE(game.setPlayerRole(game.getHitler()->name, Player::GovernmentRole::Chancellor));
+        game.electGovernment();
+        auto notHitler = game.getHitler();
+        if (++notHitler == game.getPlayers().end()) {
+            notHitler = game.getPlayers().begin();
+        }
+
+        EXPECT_TRUE(game.setPlayerRole(notHitler->name, Player::GovernmentRole::Chancellor));
+        game.electGovernment();
+        CardRange allCards = game.drawCards(game.getCardPile().size());
+        EXPECT_TRUE(allCards.selectForPolicy(CardType::Fascist));
+        EXPECT_TRUE(allCards.applyToGame());
+    }
+
+    succeedNow = true;
+    EXPECT_TRUE(game.setPlayerRole(game.getHitler()->name, Player::GovernmentRole::Chancellor));
+    game.electGovernment();
+    EXPECT_TRUE(success);
+}

@@ -51,7 +51,8 @@ namespace sh {
         unsigned int fasCards = this->getPolicyNumbers(gameState).second;
         bool hitlerChancellor = false;
         for (const auto &player : gameState.getPlayers()) {
-            if (player.type == Player::Type::Hitler && player.role == Player::GovernmentRole::Chancellor) {
+            if (player.type == Player::Type::Hitler && player.role == Player::GovernmentRole::Chancellor &&
+                player.isInGovernment()) {
                 hitlerChancellor = true;
                 break;
             }

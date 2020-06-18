@@ -154,30 +154,30 @@ namespace sh {
         return ret;
     }
 
-     auto Game::setPlayerRole(const std::string &playerName, Player::GovernmentRole role) -> std::optional<SetRoleStatus> {
+    auto Game::setPlayerRole(const std::string &playerName, Player::GovernmentRole role) -> std::optional<SetRoleStatus> {
         using Role = Player::GovernmentRole;
-         auto newRoleBearer = getPlayerByName(playerName);
-         if (!newRoleBearer.has_value()) {
-             return {};
-         }
+        auto newRoleBearer = getPlayerByName(playerName);
+        if (!newRoleBearer.has_value()) {
+            return {};
+        }
 
-         if ((*newRoleBearer)->isDead()) {
-             return SetRoleStatus::PlayerIsDead;
-         }
+        if ((*newRoleBearer)->isDead()) {
+            return SetRoleStatus::PlayerIsDead;
+        }
 
-         bool invalidChancellor = role == Role::Chancellor && (*newRoleBearer)->isInGovernment();
-         bool invalidPresident = newRoleBearer == getPlayerByCurrentRole(Player::GovernmentRole::President);
-         if (invalidChancellor || invalidPresident) {
-             return SetRoleStatus::Ineligible;
-         }
+        bool invalidChancellor = role == Role::Chancellor && (*newRoleBearer)->isInGovernment();
+        bool invalidPresident = newRoleBearer == getPlayerByCurrentRole(Player::GovernmentRole::President);
+        if (invalidChancellor || invalidPresident) {
+            return SetRoleStatus::Ineligible;
+        }
 
-         auto currentRoleBearer = getPlayerByCurrentRole(role);
-         if (currentRoleBearer.has_value()) {
-             (*currentRoleBearer)->role.reset();
-         }
+        auto currentRoleBearer = getPlayerByCurrentRole(role);
+        if (currentRoleBearer.has_value()) {
+            (*currentRoleBearer)->role.reset();
+        }
 
-         (*newRoleBearer)->role = role;
-         return SetRoleStatus::Success;
+        (*newRoleBearer)->role = role;
+        return SetRoleStatus::Success;
     }
 
     bool Game::killPlayer(const std::string &playerName) {
@@ -256,6 +256,8 @@ namespace sh {
         if (chancellor.has_value()) {
             (*chancellor)->elect();
         }
+
+        generateEventsAndNotify(GameEventTrigger::PlayerElected);
     }
 
     auto Game::getHitler() const -> std::vector<Player>::const_iterator {
