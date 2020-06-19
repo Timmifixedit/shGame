@@ -15,7 +15,10 @@ else()
 endif ()
 
 project(SecretHitlerGameMaster VERSION 0.1 DESCRIPTION "Game master application for the card game 'Secret Hitler'")
-set(SOURCES)
+set(SOURCES
+        ${CMAKE_SOURCE_DIR}/src/gameStateHandlers.cpp
+        ${CMAKE_SOURCE_DIR}/src/util.cpp
+        )
 
 set(LIBS SecretHitlerGameLogic)
 include_directories(${CMAKE_SOURCE_DIR}/src)
