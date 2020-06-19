@@ -30,6 +30,12 @@ TEST(game_event_test, event_type) {
     EXPECT_EQ(events[5]->type, sh::GameEventType::Veto);
 }
 
+/**
+ * Plays a number of cards of a certain type
+ * @param n number of cards to play
+ * @param cardType type of the played cards
+ * @param game game object to play the cards in
+ */
 static void playNCArds(unsigned int n, sh::CardType cardType, sh::Game &game){
     for (auto i = 0u; i < n; ++i) {
         sh::CardRange allCards = game.drawCards(game.getCardPile().size());
