@@ -16,7 +16,9 @@ namespace gameHandling {
      * @param out output stream to report to the user
      * @return game instance or nothing if errors occurred.
      */
-    auto setupGame(std::istream &in, std::ostream &out) -> std::optional<sh::Game>;
+    auto setupGame(std::istream &input, std::ostream &output) -> std::optional<sh::Game>;
+
+    bool chancellorElection(std::istream &in, std::ostream &out, sh::Game &game);
 }
 
 #endif //SECRETHITLERGAMEMASTER_GAMESTATEHANDLERS_H

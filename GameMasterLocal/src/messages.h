@@ -14,4 +14,14 @@ constexpr auto INVALID_RULE_SET = "The specified rule set is not known";
 
 constexpr auto EMPTY_NAME = "Player names must not be empty";
 
+constexpr auto ELECT_CHANCELLOR = "Elect a new chancellor";
+
+constexpr auto PLAYER_NOT_FOUND = "Player name is not known";
+
+constexpr auto PLAYER_INELIGIBLE = "Cannot elect player. They were in the last administration";
+
+constexpr auto PLAYER_DEAD = "This player is dead";
+
+constexpr auto ELECTION_SUCCESS = "Election successful";
+
 #endif //SECRETHITLERGAMEMASTER_MESSAGES_H

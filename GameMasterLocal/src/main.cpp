@@ -9,13 +9,14 @@
 #include "util.h"
 #include "gameStateHandlers.h"
 
-int main(int , char* []) {
+int main() {
     std::optional<sh::Game> game;
     while (!(game = gameHandling::setupGame(std::cin, std::cout)).has_value());
-    for (const auto &player : game->getPlayers()) {
-        std::cout << player.name << std::endl;
-    }
 
+    game->setNextPresident();
+    auto pres = game->getPlayerByCurrentRole(sh::Player::GovernmentRole::President);
+    std::cout << (*pres)->name << std::endl;
+    while (!gameHandling::chancellorElection(std::cin, std::cout, *game));
     std::cout << "Success" << std::endl;
     return 0;
 }
