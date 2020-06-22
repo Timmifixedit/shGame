@@ -18,6 +18,8 @@ namespace sh{
 
     class CardRange {
     public:
+        CardRange(const CardRange &) = delete;
+        CardRange &operator=(const CardRange &) = delete;
         CardRange(Game &game, unsigned int n);
 
         /**
