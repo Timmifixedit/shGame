@@ -12,6 +12,8 @@
 #include "rules.h"
 #include "CardRange.h"
 
+
+using NameList = std::vector<std::string>;
 TEST(game_event_test, event_type) {
     std::array<sh::GameEventPtr , 6> events = {
             std::make_shared<sh::LiberalsWin>(),
@@ -79,7 +81,7 @@ static sh::GameEventHandler failOnEvent(sh::GameEventType eventType) {
 
 TEST(game_event_test, liberals_win) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     bool success = false;
     bool succeedNow = false;
     game.subscribe(succeedOnEventNow(GameEventType::LiberalsWin, succeedNow, success));
@@ -97,7 +99,7 @@ TEST(game_event_test, liberals_win) {
 
 TEST(game_event_test, liberals_kill_hitler) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     bool success = false;
     bool succeedNow = true;
     game.subscribe(succeedOnEventNow(GameEventType::LiberalsWin, succeedNow, success));
@@ -112,7 +114,7 @@ TEST(game_event_test, liberals_kill_hitler) {
 
 TEST(game_event_test, fascists_win) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     bool success = false;
     bool succeedNow = false;
     game.subscribe(succeedOnEventNow(GameEventType::FascistsWin, succeedNow, success));
@@ -127,7 +129,7 @@ TEST(game_event_test, fascists_win) {
 
 TEST(game_event_test, hilter_wins) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     bool success = false;
     bool succeedNow = false;
 
@@ -158,7 +160,7 @@ TEST(game_event_test, hilter_wins) {
 
 TEST(game_event_test, investigate_loyalty) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     bool success = false;
     bool succeedNow = false;
     game.subscribe(succeedOnEventNow(GameEventType::InvestigateLoyalty, succeedNow, success));
@@ -176,7 +178,7 @@ TEST(game_event_test, investigate_loyalty) {
 
 TEST(game_event_test, special_election) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     bool success = false;
     bool succeedNow = false;
     game.subscribe(succeedOnEventNow(GameEventType::SpecialElection, succeedNow, success));
@@ -193,7 +195,7 @@ TEST(game_event_test, special_election) {
 
 TEST(game_event_test, execution) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     bool success = false;
     bool succeedNow = false;
     game.subscribe(succeedOnEventNow(GameEventType::Execution, succeedNow, success));
@@ -209,7 +211,7 @@ TEST(game_event_test, execution) {
 
 TEST(game_event_test, veto) {
     using namespace sh;
-    Game game({"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     bool success = false;
     bool succeedNow = false;
     game.subscribe(succeedOnEventNow(GameEventType::Veto, succeedNow, success));

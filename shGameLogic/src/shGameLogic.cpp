@@ -42,12 +42,6 @@ namespace sh {
         government = false;
     }
 
-    Game::Game(const std::vector<std::string> &players, RuleSet rules) :
-        players(assignPlayers(players)), rules(std::move(rules)),
-        policyBoard({{CardType::Liberal, 0}, {CardType::Fascist, 0}}) {
-        restockCardPile();
-    }
-
     unsigned int Game::numberOfLiberals(unsigned int numPlayers) {
         return numPlayers / 2 + 1;
     }

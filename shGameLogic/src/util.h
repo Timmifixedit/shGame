@@ -6,6 +6,20 @@
 #include <array>
 
 namespace util {
+
+    /**
+     * SFINAE hacks...
+     */
+    template<typename T>
+    std::true_type test(T *t, typename std::remove_reference<decltype(t->begin(), t->end(), t)>::type);
+
+    template<typename T>
+    std::false_type test(...);
+
+    template<typename T>
+    struct is_iterable : decltype(test<T>(nullptr, nullptr)) {};
+
+
 /**
  * Returns a random integer number between min and max
  * @param min lower bound (inclusive)
