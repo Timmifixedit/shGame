@@ -1,9 +1,9 @@
 //
 // Created by tim on 19.06.20.
 //
-#include <utility>
 #include <vector>
 #include <string>
+#include <unordered_set>
 #include <SecretHitlerGameLogic/rules.h>
 
 #include "gameStateHandlers.h"
@@ -12,23 +12,26 @@
 
 namespace gameHandling{
     auto setupGame(std::istream &input, std::ostream &output) -> std::optional<sh::Game> {
-        std::string playersIn = gmUtil::promptForInput(INPUT_PLAYER_NAMES, input, output);
-        std::vector<std::string> playerNames = gmUtil::splitString(playersIn, ' ');
+        const std::string playersIn = gmUtil::promptForInput(INPUT_PLAYER_NAMES, input, output);
+        const std::vector<std::string> playerNames = gmUtil::splitString(playersIn, ' ');
+        std::unordered_set<std::string> validNames;
+        validNames.reserve(playerNames.size());
         for (const auto &playerName : playerNames) {
-            if (playerName.empty()) {
-                output << EMPTY_NAME << std::endl;
+            if(!playerName.empty() && !validNames.emplace(playerName).second) {
+                output << DUPLICATE_NAME << std::endl;
                 return {};
             }
         }
-        std::string ruleSetIn = gmUtil::promptForInput(INPUT_RULE_SET, input, output);
-        std::optional<sh::RuleSetType> ruleType = gmUtil::parseRuleType(ruleSetIn);
+
+        const std::string ruleSetIn = gmUtil::promptForInput(INPUT_RULE_SET, input, output);
+        const std::optional<sh::RuleSetType> ruleType = gmUtil::parseRuleType(ruleSetIn);
         if (!ruleType.has_value()) {
             output << INVALID_RULE_SET << std::endl;
             return {};
         }
 
         try {
-            return sh::Game(playerNames, sh::createRuleSet(*ruleType));
+            return sh::Game(validNames, sh::createRuleSet(*ruleType));
         } catch (const std::runtime_error &e) {
             output << e.what() << std::endl;
             return {};
