@@ -13,6 +13,7 @@
 #include "GlobalTypes.h"
 #include "CardRange.h"
 #include "GameEvent.h"
+#include "util.h"
 
 namespace sh {
     constexpr unsigned int NUM_LIB_CARDS = 6;
@@ -72,7 +73,13 @@ namespace sh {
          * @param players list of player names. Has to be lower than MAX_NUM_PLAYERS and higher than MIN_NUM_PLAYERS
          * @throws std::runtime_error if illegal number of players
          */
-        Game(const std::vector<std::string> &players, RuleSet rules);
+        template<typename T /*= std::vector<std::string>*/>
+        Game(const T &players, RuleSet rules) :
+                players(assignPlayers(players)), rules(std::move(rules)),
+                policyBoard({{CardType::Liberal, 0}, {CardType::Fascist, 0}}) {
+            static_assert(util::is_iterable<T>::value, "Argument is not iterable");
+                    restockCardPile();
+                }
 
         /**
          * Returns the number of liberal players in the game according to the game rules
@@ -165,6 +172,12 @@ namespace sh {
 
     private:
         friend class CardRange;
+
+        template<typename T>
+        static std::vector<Player> assignPlayers(const T &pNames) {
+            std::vector<std::string> names(pNames.begin(), pNames.end());
+            return assignPlayers(names);
+        }
         static std::vector<Player> assignPlayers(const std::vector<std::string> &pNames);
         void restockCardPile();
         void notifyAll(GameEventType type) const;
