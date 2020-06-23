@@ -19,6 +19,8 @@ namespace gameHandling {
     auto setupGame(std::istream &input, std::ostream &output) -> std::optional<sh::Game>;
 
     bool chancellorElection(std::istream &in, std::ostream &out, sh::Game &game);
+
+    bool legisltivePeriod(std::istream &in, std::ostream &out, sh::Game &game);
 }
 
 #endif //SECRETHITLERGAMEMASTER_GAMESTATEHANDLERS_H
