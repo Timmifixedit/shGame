@@ -77,7 +77,7 @@ namespace sh {
         Game(const T &players, RuleSet rules) :
                 players(assignPlayers(players)), rules(std::move(rules)),
                 policyBoard({{CardType::Liberal, 0}, {CardType::Fascist, 0}}) {
-            static_assert(util::is_iterable<T>::value, "Argument is not iterable");
+            static_assert(util::customTypeTraits::is_iterable<T>::value, "Argument is not iterable");
                     restockCardPile();
                 }
 

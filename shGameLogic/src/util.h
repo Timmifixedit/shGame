@@ -5,19 +5,21 @@
 #define SHGAME_UTIL_H
 #include <array>
 
-namespace util {
+namespace sh::util {
 
-    /**
-     * SFINAE hacks...
-     */
-    template<typename T>
-    std::true_type test(T *t, typename std::remove_reference<decltype(t->begin(), t->end(), t)>::type);
+    namespace customTypeTraits {
+        /**
+         * SFINAE hacks...
+         */
+        template<typename T>
+        std::true_type test(T *t, typename std::remove_reference<decltype(t->begin(), t->end(), t)>::type);
 
-    template<typename T>
-    std::false_type test(...);
+        template<typename T>
+        std::false_type test(...);
 
-    template<typename T>
-    struct is_iterable : decltype(test<T>(nullptr, nullptr)) {};
+        template<typename T>
+        struct is_iterable : decltype(test<T>(nullptr, nullptr)) {};
+    }
 
 
 /**

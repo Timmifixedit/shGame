@@ -22,6 +22,7 @@ set(SOURCES
         ${CMAKE_SOURCE_DIR}/src/CardRange.cpp
         ${CMAKE_SOURCE_DIR}/src/GameEvent.cpp
         ${CMAKE_SOURCE_DIR}/src/rules.cpp
+        ${CMAKE_SOURCE_DIR}/src/enumsToString.cpp
         )
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
@@ -34,7 +35,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         VERSION ${PROJECT_VERSION}
         SOVERSION 1
         PUBLIC_HEADER
-        "src/shGameLogic.h;src/util.h;src/CardRange.h;src/GameEvent.h;src/GlobalTypes.h;src/rules.h")
+        "src/shGameLogic.h;src/util.h;src/CardRange.h;src/GameEvent.h;src/GlobalTypes.h;src/rules.h;src/enumsToString.h")
 
 install(TARGETS ${PROJECT_NAME}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
