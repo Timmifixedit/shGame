@@ -4,7 +4,7 @@
 
 #include "util.h"
 #include <random>
-namespace util {
+namespace sh::util {
     int rng(int min, int max) {
         static std::random_device rd;
         static std::default_random_engine rEngine(rd());

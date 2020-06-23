@@ -6,20 +6,20 @@
 #include "util.h"
 
 TEST(util_test, rng_bounds_pos) {
-    int rngVal = util::rng(0, 10);
+    int rngVal = sh::util::rng(0, 10);
     EXPECT_LE(rngVal, 10);
     EXPECT_GE(rngVal, 0);
 }
 
 TEST(util_test, rng_bounds_neg) {
-    int rngVal = util::rng(-17, 3);
+    int rngVal = sh::util::rng(-17, 3);
     EXPECT_LE(rngVal, 3);
     EXPECT_GE(rngVal, -17);
 }
 
 TEST(uti_test, select_random_array) {
     int array[] = {1, 2, 3, 4, 5, 6};
-    auto *elem = util::selectRandom(array);
+    auto *elem = sh::util::selectRandom(array);
     *elem = 17;
     bool found = false;
     for(const auto &i : array) {
@@ -34,7 +34,7 @@ TEST(uti_test, select_random_array) {
 
 TEST(uti_test, select_random_container) {
     std::vector<int> vec = {1, 2, 3, 4, 5, 6};
-    auto elem = util::selectRandom(vec);
+    auto elem = sh::util::selectRandom(vec);
     *elem = 17;
     bool found = false;
     for(const auto &i : vec) {
