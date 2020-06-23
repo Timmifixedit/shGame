@@ -6,9 +6,10 @@
 #define SECRETHITLERGAMELOGIC_ENUMSTOSTRING_H
 
 #include "GlobalTypes.h"
-#include <shGameLogic.h>
+#include "shGameLogic.h"
 
 #include <string>
+#include <optional>
 
 namespace sh::util::strings {
     std::string toString(sh::CardType cardType);
@@ -20,6 +21,15 @@ namespace sh::util::strings {
      * @return
      */
     std::string toString(sh::Player::Type type, bool specialType = false);
+
+    /**
+     * Converts a string to the appropriate enum type
+     * @param string
+     * @return the enum type or nothing if mismatch
+     */
+    auto toCardType(const std::string &string) -> std::optional<sh::CardType>;
+    auto toGovRole(const std::string &string) -> std::optional<sh::Player::GovernmentRole>;
+    auto toPlayerType(const std::string &string) -> std::optional<sh::Player::Type>;
 }
 
 
