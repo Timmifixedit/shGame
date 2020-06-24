@@ -13,19 +13,22 @@ int main() {
     std::optional<sh::Game> game;
     while (!(game = gameHandling::setupGame(std::cin, std::cout)).has_value());
 
-    game->setNextPresident();
-    gameHandling::ElectionResult electionResult;
-    gmUtil::printGameStatus(std::cout, *game);
-    while ((electionResult = gameHandling::chancellorElection(std::cin, std::cout, *game)) !=
-        gameHandling::ElectionResult::SUCCESS) {
-        if (electionResult == gameHandling::ElectionResult::FAILED) {
-            game->setNextPresident();
-        }
-
+    while (true) {
+        game->setNextPresident();
+        gameHandling::ElectionResult electionResult;
         gmUtil::printGameStatus(std::cout, *game);
+        while ((electionResult = gameHandling::chancellorElection(std::cin, std::cout, *game)) !=
+               gameHandling::ElectionResult::SUCCESS) {
+            if (electionResult == gameHandling::ElectionResult::FAILED) {
+                game->setNextPresident();
+                gmUtil::printGameStatus(std::cout, *game);
+            }
+
+            gmUtil::printGameStatus(std::cout, *game);
+        }
+        while (!gameHandling::legislativePeriod(std::cin, std::cout, *game));
+        std::cout << "Success" << std::endl;
     }
-    while (!gameHandling::legislativePeriod(std::cin, std::cout, *game));
-    std::cout << "Success" << std::endl;
     return 0;
 }
 

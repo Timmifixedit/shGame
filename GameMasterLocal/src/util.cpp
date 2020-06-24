@@ -53,17 +53,18 @@ namespace gmUtil {
 
     void printGameStatus(std::ostream &out, const sh::Game &game) {
         using namespace sh::util::strings;
+        out << messages::PLAYER_ORDER << std::endl;
         for (const auto &player : game.getPlayers()) {
+            out << player.name << " ";
             if (player.isInGovernment() && player.role.has_value()) {
-                fmt::printf(out, messages::PLAYER_IN_GOV, player.name, toString(*player.role));
-                out << std::endl;
+                fmt::printf(out, messages::PLAYER_IN_GOV, toString(*player.role));
             } else if (player.role.has_value()) {
-                fmt::printf(out, messages::PLAYER_IS_CANDIDATE, player.name, toString(*player.role));
-                out << std::endl;
+                fmt::printf(out, messages::PLAYER_IS_CANDIDATE, toString(*player.role));
             } else if (player.isInGovernment()) {
-                fmt::printf(out, messages::PLAYER_IN_LAST_GOV, player.name);
-                out << std::endl;
+                fmt::printf(out, messages::PLAYER_IN_LAST_GOV);
             }
+
+            out << std::endl;
         }
     }
 }

@@ -26,9 +26,10 @@ namespace messages {
     constexpr auto INVALID_POLICY = "You cannot choose a %s policy";
     constexpr auto CONFIRM_DECISION = "Please confirm your decision by typing yes. Abort by typing anything else";
     constexpr auto CONFIRM_ELECTION_FAILED = "Confirm that the election failed and that no government will be elected.";
-    constexpr auto PLAYER_IN_LAST_GOV = "Player '%s' was in last administration";
-    constexpr auto PLAYER_IS_CANDIDATE = "Player '%s' is the current candidate for %s";
-    constexpr auto PLAYER_IN_GOV = "Player '%s' is in the current government as %s";
+    constexpr auto PLAYER_IN_LAST_GOV = "last administration";
+    constexpr auto PLAYER_IS_CANDIDATE = "candidate (%s)";
+    constexpr auto PLAYER_IN_GOV = "current government (%d)";
+    constexpr auto PLAYER_ORDER = "This is the seating order (circular from top to bottom)";
 }
 
 
