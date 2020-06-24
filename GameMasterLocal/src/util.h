@@ -9,6 +9,7 @@
 #include <vector>
 #include <optional>
 #include <SecretHitlerGameLogic/rules.h>
+#include <SecretHitlerGameLogic/shGameLogic.h>
 
 namespace gmUtil {
     enum class GameState {
@@ -47,6 +48,8 @@ namespace gmUtil {
      * @return true if confirmation successful, false otherwise
      */
     bool getConfirmation(const std::string &msg, std::istream &in, std::ostream &out);
+
+    void printGameStatus(std::ostream &out, const sh::Game &game);
 }
 
 

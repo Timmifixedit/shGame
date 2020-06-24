@@ -2,9 +2,13 @@
 // Created by tim on 19.06.20.
 //
 
-#include "util.h"
 #include <iostream>
 #include <sstream>
+#include <SecretHitlerGameLogic/enumsToString.h>
+
+#include "util.h"
+#include "printf.hpp"
+#include "messages.h"
 
 namespace gmUtil {
     std::string promptForInput(const std::string &msg, std::istream &in, std::ostream &out) {
@@ -44,6 +48,22 @@ namespace gmUtil {
         } else {
             out << CONFIRM_ABORT << std::endl;
             return false;
+        }
+    }
+
+    void printGameStatus(std::ostream &out, const sh::Game &game) {
+        using namespace sh::util::strings;
+        for (const auto &player : game.getPlayers()) {
+            if (player.isInGovernment() && player.role.has_value()) {
+                fmt::printf(out, messages::PLAYER_IN_GOV, player.name, toString(*player.role));
+                out << std::endl;
+            } else if (player.role.has_value()) {
+                fmt::printf(out, messages::PLAYER_IS_CANDIDATE, player.name, toString(*player.role));
+                out << std::endl;
+            } else if (player.isInGovernment()) {
+                fmt::printf(out, messages::PLAYER_IN_LAST_GOV, player.name);
+                out << std::endl;
+            }
         }
     }
 }
