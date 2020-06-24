@@ -43,6 +43,10 @@ namespace gameHandling{
 
     bool chancellorElection(std::istream &in, std::ostream &out, sh::Game &game) {
         std::string chancellorName = gmUtil::promptForInput(messages::ELECT_CHANCELLOR, in, out);
+        if (!gmUtil::getConfirmation(messages::CONFIRM_DECISION, in, out)) {
+            return false;
+        }
+
         std::optional<sh::SetRoleStatus> status = game.setPlayerRole(chancellorName,
                 sh::Player::GovernmentRole::Chancellor);
         if (!status.has_value()) {
@@ -62,7 +66,7 @@ namespace gameHandling{
         }
     }
 
-    bool legisltivePeriod(std::istream &in, std::ostream &out, sh::Game &game) {
+    bool legislativePeriod(std::istream &in, std::ostream &out, sh::Game &game) {
         constexpr unsigned int N_DRAW_CARDS = 3;
         auto currentPres = game.getPlayerByCurrentRole(sh::Player::GovernmentRole::President);
         if (!currentPres.has_value()) {
@@ -72,20 +76,30 @@ namespace gameHandling{
         fmt::printf(out, messages::PRES_DISCARD_CARD, (*currentPres)->name);
         out << std::endl;
         sh::CardRange cards = game.drawCards(N_DRAW_CARDS);
-        for (auto card : cards) {
-            out << sh::util::strings::toString(card) << " | ";
-        }
+        auto promptPlayerForCard = [&in, &out, &cards]() {
+            bool invalidInput = false;
+            std::optional<sh::CardType> choice;
+            do {
 
-        out << std::endl;
-        std::string playerInput = gmUtil::promptForInput(messages::CHOOSE_CARD, in, out);
-        std::optional<sh::CardType> choice = sh::util::strings::toCardType(playerInput);
-        if (!choice.has_value()) {
-            fmt::printf(out, messages::INVALID_CARD_TYPE, playerInput);
-            out << std::endl;
-            return false;
-        }
+                invalidInput = false;
+                for (auto card : cards) {
+                    out << sh::util::strings::toString(card) << " | ";
+                }
 
-        if (!cards.discard(*choice)) {
+                out << std::endl;
+                std::string playerInput = gmUtil::promptForInput(messages::CHOOSE_CARD, in, out);
+                choice = sh::util::strings::toCardType(playerInput);
+                if (!choice.has_value()) {
+                    fmt::printf(out, messages::INVALID_CARD_TYPE, playerInput);
+                    out << std::endl;
+                    invalidInput = true;
+                }
+            } while (invalidInput || !gmUtil::getConfirmation(messages::CONFIRM_DECISION, in , out));
+            return *choice;
+        };
+
+        sh::CardType choice = promptPlayerForCard();
+        if (!cards.discard(choice)) {
             throw std::runtime_error("Failed to discard card");
         }
 
@@ -96,20 +110,9 @@ namespace gameHandling{
 
         fmt::printf(out, messages::PLAY_POLICY, (*currentChancellor)->name);
         out << std::endl;
-        for (auto card : cards) {
-            out << sh::util::strings::toString(card) << " | ";
-        }
+        choice = promptPlayerForCard();
 
-        out << std::endl;
-        playerInput = gmUtil::promptForInput(messages::CHOOSE_CARD, in, out);
-        choice = sh::util::strings::toCardType(playerInput);
-        if (!choice.has_value()) {
-            fmt::printf(out, messages::INVALID_CARD_TYPE, playerInput);
-            out << std::endl;
-            return false;
-        }
-
-        if (!cards.selectForPolicy(*choice) || !cards.applyToGame()) {
+        if (!cards.selectForPolicy(choice) || !cards.applyToGame()) {
             throw std::runtime_error("Failed to play policy card");
         }
 

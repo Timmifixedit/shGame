@@ -23,6 +23,7 @@ namespace messages {
     constexpr auto CHOOSE_CARD = "Chose a card";
     constexpr auto INVALID_CARD_TYPE = "%s is no appropriate policy type";
     constexpr auto PLAY_POLICY = "The chancellor (%s) will now choose one of the following cards to play as policy";
+    constexpr auto CONFIRM_DECISION = "Please confirm your decision by typing yes. Abort by typing anything else";
 }
 
 

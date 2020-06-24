@@ -20,7 +20,7 @@ namespace gameHandling {
 
     bool chancellorElection(std::istream &in, std::ostream &out, sh::Game &game);
 
-    bool legisltivePeriod(std::istream &in, std::ostream &out, sh::Game &game);
+    bool legislativePeriod(std::istream &in, std::ostream &out, sh::Game &game);
 }
 
 #endif //SECRETHITLERGAMEMASTER_GAMESTATEHANDLERS_H

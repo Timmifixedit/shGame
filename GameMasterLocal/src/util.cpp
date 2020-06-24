@@ -33,4 +33,17 @@ namespace gmUtil {
 
         return {};
     }
+
+    bool getConfirmation(const std::string &msg, std::istream &in, std::ostream &out) {
+        constexpr auto CONFIRM = "yes";
+        constexpr auto CONFIRM_SUCCESS = "Confirmation successful";
+        constexpr auto CONFIRM_ABORT = "Aborted";
+        if (promptForInput(msg, in, out) == CONFIRM) {
+            out << CONFIRM_SUCCESS << std::endl;
+            return true;
+        } else {
+            out << CONFIRM_ABORT << std::endl;
+            return false;
+        }
+    }
 }

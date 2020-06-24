@@ -38,6 +38,15 @@ namespace gmUtil {
      * @return Corresponding rule type or nothing if no match was found
      */
     auto parseRuleType(const std::string &string) -> std::optional<sh::RuleSetType>;
+
+    /**
+     * Asks the user for confirmation
+     * @param msg message to print to the user
+     * @param in input stream to read the user data from
+     * @param out output stream to report to the user
+     * @return true if confirmation successful, false otherwise
+     */
+    bool getConfirmation(const std::string &msg, std::istream &in, std::ostream &out);
 }
 
 

@@ -15,7 +15,7 @@ int main() {
 
     game->setNextPresident();
     while (!gameHandling::chancellorElection(std::cin, std::cout, *game));
-    while (!gameHandling::legisltivePeriod(std::cin, std::cout, *game));
+    while (!gameHandling::legislativePeriod(std::cin, std::cout, *game));
     std::cout << "Success" << std::endl;
     return 0;
 }
