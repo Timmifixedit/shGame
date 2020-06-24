@@ -10,6 +10,10 @@
 #include <iostream>
 
 namespace gameHandling {
+    enum class ElectionResult {
+        SUCCESS, FAILED, INPUT_FAILURE
+    };
+
     /**
      * Prompts the user for inputs to set up a game. Errors are reported to the user.
      * @param in input stream to read the user data from
@@ -18,7 +22,7 @@ namespace gameHandling {
      */
     auto setupGame(std::istream &input, std::ostream &output) -> std::optional<sh::Game>;
 
-    bool chancellorElection(std::istream &in, std::ostream &out, sh::Game &game);
+    ElectionResult chancellorElection(std::istream &in, std::ostream &out, sh::Game &game);
 
     bool legislativePeriod(std::istream &in, std::ostream &out, sh::Game &game);
 }

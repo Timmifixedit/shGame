@@ -14,7 +14,16 @@ int main() {
     while (!(game = gameHandling::setupGame(std::cin, std::cout)).has_value());
 
     game->setNextPresident();
-    while (!gameHandling::chancellorElection(std::cin, std::cout, *game));
+    gameHandling::ElectionResult electionResult;
+    gmUtil::printGameStatus(std::cout, *game);
+    while ((electionResult = gameHandling::chancellorElection(std::cin, std::cout, *game)) !=
+        gameHandling::ElectionResult::SUCCESS) {
+        if (electionResult == gameHandling::ElectionResult::FAILED) {
+            game->setNextPresident();
+        }
+
+        gmUtil::printGameStatus(std::cout, *game);
+    }
     while (!gameHandling::legislativePeriod(std::cin, std::cout, *game));
     std::cout << "Success" << std::endl;
     return 0;

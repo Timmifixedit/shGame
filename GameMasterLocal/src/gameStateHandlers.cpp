@@ -7,11 +7,11 @@
 #include <SecretHitlerGameLogic/rules.h>
 #include <SecretHitlerGameLogic/enumsToString.h>
 #include <sstream>
+#include <printf.hpp>
 
 #include "gameStateHandlers.h"
 #include "messages.h"
 #include "util.h"
-#include "printf.hpp"
 
 namespace gameHandling{
     auto setupGame(std::istream &input, std::ostream &output) -> std::optional<sh::Game> {
@@ -41,28 +41,32 @@ namespace gameHandling{
         }
     }
 
-    bool chancellorElection(std::istream &in, std::ostream &out, sh::Game &game) {
+    ElectionResult chancellorElection(std::istream &in, std::ostream &out, sh::Game &game) {
         std::string chancellorName = gmUtil::promptForInput(messages::ELECT_CHANCELLOR, in, out);
-        if (!gmUtil::getConfirmation(messages::CONFIRM_DECISION, in, out)) {
-            return false;
+        const char *message = chancellorName.empty() ? messages::CONFIRM_ELECTION_FAILED : messages::CONFIRM_DECISION;
+        bool confirm = gmUtil::getConfirmation(message, in, out);
+        if (chancellorName.empty() && confirm) {
+            return ElectionResult::FAILED;
+        } else if (!confirm) {
+            return ElectionResult::INPUT_FAILURE;
         }
 
         std::optional<sh::SetRoleStatus> status = game.setPlayerRole(chancellorName,
                 sh::Player::GovernmentRole::Chancellor);
         if (!status.has_value()) {
             out << messages::PLAYER_NOT_FOUND << std::endl;
-            return false;
+            return ElectionResult::INPUT_FAILURE;
         } else if (status == sh::SetRoleStatus::Ineligible) {
             fmt::printf(out, messages::PLAYER_INELIGIBLE, chancellorName);
             out << std::endl;
-            return false;
+            return ElectionResult::INPUT_FAILURE;
         } else if (status == sh::SetRoleStatus::PlayerIsDead) {
             out << messages::PLAYER_DEAD << std::endl;
-            return false;
+            return ElectionResult::INPUT_FAILURE;
         } else {
             game.electGovernment();
             out << messages::ELECTION_SUCCESS << std::endl;
-            return true;
+            return ElectionResult::SUCCESS;
         }
     }
 
@@ -73,8 +77,6 @@ namespace gameHandling{
             throw std::runtime_error("No president in current government");
         }
 
-        fmt::printf(out, messages::PRES_DISCARD_CARD, (*currentPres)->name);
-        out << std::endl;
         sh::CardRange cards = game.drawCards(N_DRAW_CARDS);
         auto promptPlayerForCard = [&in, &out, &cards]() {
             bool invalidInput = false;
@@ -98,21 +100,37 @@ namespace gameHandling{
             return *choice;
         };
 
-        sh::CardType choice = promptPlayerForCard();
-        if (!cards.discard(choice)) {
-            throw std::runtime_error("Failed to discard card");
-        }
+        bool validCard = true;
+        do {
+            validCard = true;
+            fmt::printf(out, messages::PRES_DISCARD_CARD, (*currentPres)->name);
+            out << std::endl;
+            sh::CardType choice = promptPlayerForCard();
+            if (!cards.discard(choice)) {
+                fmt::printf(out, messages::INVALID_POLICY, sh::util::strings::toString(choice));
+                out << std::endl;
+                validCard = false;
+            }
+        } while (!validCard);
 
         auto currentChancellor = game.getPlayerByCurrentRole(sh::Player::GovernmentRole::Chancellor);
         if (!currentChancellor.has_value()) {
             throw std::runtime_error("No chancellor in current government");
         }
 
-        fmt::printf(out, messages::PLAY_POLICY, (*currentChancellor)->name);
-        out << std::endl;
-        choice = promptPlayerForCard();
+        do {
+            validCard = true;
+            fmt::printf(out, messages::PLAY_POLICY, (*currentChancellor)->name);
+            out << std::endl;
+            sh::CardType choice = promptPlayerForCard();
+            if (!cards.selectForPolicy(choice)) {
+                fmt::printf(out, messages::INVALID_POLICY, sh::util::strings::toString(choice));
+                out << std::endl;
+                validCard = false;
+            }
+        } while (!validCard);
 
-        if (!cards.selectForPolicy(choice) || !cards.applyToGame()) {
+        if (!cards.applyToGame()) {
             throw std::runtime_error("Failed to play policy card");
         }
 
