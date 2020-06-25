@@ -127,7 +127,7 @@ namespace sh {
         return discardPile;
     }
 
-    auto Game::GetPlayerByCurrentRole(Player::GovernmentRole role) const ->
+    auto Game::getPlayerByCurrentRole(Player::GovernmentRole role) const ->
         std::optional<std::vector<Player>::const_iterator> {
         auto ret = std::find_if(players.cbegin(), players.cend(),
                 [role](const auto &a){return a.role == role;});
