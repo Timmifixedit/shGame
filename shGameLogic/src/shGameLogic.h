@@ -132,7 +132,7 @@ namespace sh {
          * @param role desired role
          * @return
          */
-        auto GetPlayerByCurrentRole(Player::GovernmentRole role) const -> std::optional<std::vector<Player>::const_iterator>;
+        auto getPlayerByCurrentRole(Player::GovernmentRole role) const -> std::optional<std::vector<Player>::const_iterator>;
         auto getPlayerByCurrentRole(Player::GovernmentRole role) -> std::optional<std::vector<Player>::iterator>;
 
         auto getGovernment() -> std::vector<std::vector<Player>::iterator>;
