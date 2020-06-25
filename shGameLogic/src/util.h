@@ -12,13 +12,14 @@ namespace sh::util {
          * SFINAE hacks...
          */
         template<typename T>
-        std::true_type test(T *t, typename std::remove_reference<decltype(t->begin(), t->end(), t)>::type);
+        std::true_type test(typename std::remove_reference<decltype(std::begin(std::declval<T>()),
+                std::end(std::declval<T>()), std::declval<T>())>::type);
 
         template<typename T>
         std::false_type test(...);
 
         template<typename T>
-        struct is_iterable : decltype(test<T>(nullptr, nullptr)) {};
+        struct is_iterable : decltype(test<T>(std::declval<T>())) {};
     }
 
 
@@ -43,7 +44,7 @@ namespace sh::util {
 
     /**
      * Overload of function above for standard c arrays
-     * @tparam T type of arry
+     * @tparam T type of array
      * @tparam N array size
      * @param array array where the element is drawn from
      * @return pointer to selected element

@@ -77,7 +77,7 @@ namespace sh {
         Game(const T &players, RuleSet rules) :
                 players(assignPlayers(players)), rules(std::move(rules)),
                 policyBoard({{CardType::Liberal, 0}, {CardType::Fascist, 0}}) {
-            static_assert(util::customTypeTraits::is_iterable<T>::value, "Argument is not iterable");
+            static_assert(std::is_array<T>::value || util::customTypeTraits::is_iterable<T>::value, "Argument is not iterable");
                     restockCardPile();
                 }
 
@@ -175,7 +175,7 @@ namespace sh {
 
         template<typename T>
         static std::vector<Player> assignPlayers(const T &pNames) {
-            std::vector<std::string> names(pNames.begin(), pNames.end());
+            std::vector<std::string> names(std::begin(pNames), std::end(pNames));
             return assignPlayers(names);
         }
         static std::vector<Player> assignPlayers(const std::vector<std::string> &pNames);
