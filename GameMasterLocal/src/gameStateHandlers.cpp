@@ -16,6 +16,7 @@
 
 namespace gameHandling{
     bool specialElection = false;
+    bool veto = false;
 
     auto setupGame(std::istream &input, std::ostream &output) -> std::optional<sh::Game> {
         const std::string playersIn = gmUtil::promptForInput(messages::INPUT_PLAYER_NAMES, input, output);
@@ -80,60 +81,23 @@ namespace gameHandling{
             throw std::runtime_error("No president in current government");
         }
 
+        fmt::printf(out, messages::PRES_DISCARD_CARD, (*currentPres)->name);
+        out << std::endl;
         sh::CardRange cards = game.drawCards(N_DRAW_CARDS);
-        auto promptPlayerForCard = [&in, &out, &cards]() {
-            bool invalidInput = false;
-            std::optional<sh::CardType> choice;
-            do {
-
-                invalidInput = false;
-                for (auto card : cards) {
-                    out << sh::util::strings::toString(card) << " | ";
-                }
-
-                out << std::endl;
-                std::string playerInput = gmUtil::promptForInput(messages::CHOOSE_CARD, in, out);
-                choice = sh::util::strings::toCardType(playerInput);
-                if (!choice.has_value()) {
-                    fmt::printf(out, messages::INVALID_CARD_TYPE, playerInput);
-                    out << std::endl;
-                    invalidInput = true;
-                }
-            } while (invalidInput || !gmUtil::getConfirmation(messages::CONFIRM_DECISION, in , out));
-            return *choice;
-        };
-
-        bool validCard = true;
-        do {
-            validCard = true;
-            fmt::printf(out, messages::PRES_DISCARD_CARD, (*currentPres)->name);
-            out << std::endl;
-            sh::CardType choice = promptPlayerForCard();
-            if (!cards.discard(choice)) {
-                fmt::printf(out, messages::INVALID_POLICY, sh::util::strings::toString(choice));
-                out << std::endl;
-                validCard = false;
-            }
-        } while (!validCard);
+        sh::CardType choice = gmUtil::promptPlayerForCard(in, out, cards);
+        if (!cards.discard(choice)) {
+            throw std::runtime_error("Failed to discard card");
+        }
 
         auto currentChancellor = game.getPlayerByCurrentRole(sh::Player::GovernmentRole::Chancellor);
         if (!currentChancellor.has_value()) {
             throw std::runtime_error("No chancellor in current government");
         }
 
-        do {
-            validCard = true;
-            fmt::printf(out, messages::PLAY_POLICY, (*currentChancellor)->name);
-            out << std::endl;
-            sh::CardType choice = promptPlayerForCard();
-            if (!cards.selectForPolicy(choice)) {
-                fmt::printf(out, messages::INVALID_POLICY, sh::util::strings::toString(choice));
-                out << std::endl;
-                validCard = false;
-            }
-        } while (!validCard);
-
-        if (!cards.applyToGame()) {
+        fmt::printf(out, messages::PLAY_POLICY, (*currentChancellor)->name);
+        out << std::endl;
+        choice = gmUtil::promptPlayerForCard(in, out, cards);
+        if (!cards.selectForPolicy(choice) || !cards.applyToGame()) {
             throw std::runtime_error("Failed to play policy card");
         }
 
@@ -231,6 +195,7 @@ namespace gameHandling{
                     break;
                 }
                 case sh::GameEventType::Veto:
+                    veto = true;
                     break;
                 default:
                     throw std::runtime_error("Event type not supported yet!");

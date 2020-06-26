@@ -93,4 +93,31 @@ namespace gmUtil {
         } while (!gmUtil::getConfirmation(messages::CONFIRM_DECISION, in, out));
         return pName;
     }
+
+    sh::CardType promptPlayerForCard(std::istream &in, std::ostream &out, const sh::CardRange &cards) {
+        bool invalidInput = false;
+        std::optional<sh::CardType> choice;
+        do {
+            invalidInput = false;
+            for (auto card : cards) {
+                out << sh::util::strings::toString(card) << " | ";
+            }
+
+            out << std::endl;
+            std::string playerInput = gmUtil::promptForInput(messages::CHOOSE_CARD, in, out);
+            choice = sh::util::strings::toCardType(playerInput);
+            if (!choice.has_value()) {
+                fmt::printf(out, messages::INVALID_CARD_TYPE, playerInput);
+                out << std::endl;
+                invalidInput = true;
+            } else {
+                if (std::find(cards.begin(), cards.end(), *choice) == cards.end()) {
+                    fmt::printf(out, messages::INVALID_POLICY, sh::util::strings::toString(*choice));
+                    out << std::endl;
+                    invalidInput = true;
+                }
+            }
+        } while (invalidInput || !gmUtil::getConfirmation(messages::CONFIRM_DECISION, in , out));
+        return *choice;
+    }
 }

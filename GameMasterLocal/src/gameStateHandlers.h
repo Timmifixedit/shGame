@@ -29,6 +29,7 @@ namespace gameHandling {
     sh::GameEventHandler createEventHandler(std::istream &in, std::ostream &out, sh::Game &game);
 
     extern bool specialElection;
+    extern bool veto;
 }
 
 #endif //SECRETHITLERGAMEMASTER_GAMESTATEHANDLERS_H
