@@ -221,3 +221,20 @@ TEST(game_logic_test, elect_new_government) {
     EXPECT_TRUE((*game.getPlayerByName("C"))->isInGovernment());
     EXPECT_TRUE((*game.getPlayerByName("D"))->isInGovernment());
 }
+
+TEST(game_logic_test, elect_override_chancellor) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, {});
+    EXPECT_EQ(game.setPlayerRole("A", Role::President), SetRoleStatus::Success);
+    EXPECT_EQ(game.setPlayerRole("B", Role::Chancellor), SetRoleStatus::Success);
+    game.electGovernment();
+    game.setNextPresident();
+    EXPECT_EQ(game.setPlayerRole("C", Role::Chancellor), SetRoleStatus::Success);
+    game.electGovernment();
+    EXPECT_FALSE((*game.getPlayerByName("A"))->isInGovernment());
+    EXPECT_TRUE((*game.getPlayerByName("B"))->isInGovernment());
+    EXPECT_TRUE((*game.getPlayerByName("C"))->isInGovernment());
+    EXPECT_EQ((*game.getPlayerByName("B"))->role, Role::President);
+    EXPECT_EQ((*game.getPlayerByName("C"))->role, Role::Chancellor);
+}

@@ -237,17 +237,19 @@ namespace sh {
     }
 
     void Game::electGovernment() {
+        auto pres = getPlayerByCurrentRole(Player::GovernmentRole::President);
+        auto chancellor = getPlayerByCurrentRole(Player::GovernmentRole::Chancellor);
         for (auto govPlayer : getGovernment()) {
             govPlayer->removeFromGovernment();
         }
 
-        auto pres = getPlayerByCurrentRole(Player::GovernmentRole::President);
-        auto chancellor = getPlayerByCurrentRole(Player::GovernmentRole::Chancellor);
         if (pres.has_value()) {
+            setPlayerRole((*pres)->name, Player::GovernmentRole::President);
             (*pres)->elect();
         }
 
         if (chancellor.has_value()) {
+            setPlayerRole((*chancellor)->name, Player::GovernmentRole::Chancellor);
             (*chancellor)->elect();
         }
 
