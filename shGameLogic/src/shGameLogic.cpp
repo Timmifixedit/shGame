@@ -152,7 +152,7 @@ namespace sh {
         using Role = Player::GovernmentRole;
         auto newRoleBearer = getPlayerByName(playerName);
         if (!newRoleBearer.has_value()) {
-            return {};
+            return std::nullopt;
         }
 
         if ((*newRoleBearer)->isDead()) {
