@@ -55,7 +55,8 @@ namespace gmUtil {
 
     std::string promptForPlayerAndConfirm(std::istream &in, std::ostream &out, const sh::Game &game);
 
-    sh::CardType promptPlayerForCard(std::istream &in, std::ostream &out, const sh::CardRange &cards);
+    auto promptPlayerForCard(std::istream &in, std::ostream &out, const sh::CardRange &cards, bool veto = false)
+        -> std::optional<sh::CardType>;
 }
 
 

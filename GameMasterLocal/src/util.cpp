@@ -94,7 +94,8 @@ namespace gmUtil {
         return pName;
     }
 
-    sh::CardType promptPlayerForCard(std::istream &in, std::ostream &out, const sh::CardRange &cards) {
+    auto promptPlayerForCard(std::istream &in, std::ostream &out, const sh::CardRange &cards, bool veto) ->
+        std::optional<sh::CardType> {
         bool invalidInput = false;
         std::optional<sh::CardType> choice;
         do {
@@ -106,7 +107,7 @@ namespace gmUtil {
             out << std::endl;
             std::string playerInput = gmUtil::promptForInput(messages::CHOOSE_CARD, in, out);
             choice = sh::util::strings::toCardType(playerInput);
-            if (!choice.has_value()) {
+            if (!choice.has_value() && (!veto || playerInput != "Veto")) {
                 fmt::printf(out, messages::INVALID_CARD_TYPE, playerInput);
                 out << std::endl;
                 invalidInput = true;
@@ -118,6 +119,6 @@ namespace gmUtil {
                 }
             }
         } while (invalidInput || !gmUtil::getConfirmation(messages::CONFIRM_DECISION, in , out));
-        return *choice;
+        return choice;
     }
 }

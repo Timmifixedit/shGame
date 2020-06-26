@@ -50,6 +50,7 @@ namespace gameHandling{
         const char *message = chancellorName.empty() ? messages::CONFIRM_ELECTION_FAILED : messages::CONFIRM_DECISION;
         bool confirm = gmUtil::getConfirmation(message, in, out);
         if (chancellorName.empty() && confirm) {
+            //TODO advace election tracker
             return ElectionResult::FAILED;
         } else if (!confirm) {
             return ElectionResult::INPUT_FAILURE;
@@ -74,7 +75,7 @@ namespace gameHandling{
         }
     }
 
-    bool legislativePeriod(std::istream &in, std::ostream &out, sh::Game &game) {
+    void legislativePeriod(std::istream &in, std::ostream &out, sh::Game &game) {
         constexpr unsigned int N_DRAW_CARDS = 3;
         auto currentPres = game.getPlayerByCurrentRole(sh::Player::GovernmentRole::President);
         if (!currentPres.has_value()) {
@@ -84,8 +85,12 @@ namespace gameHandling{
         fmt::printf(out, messages::PRES_DISCARD_CARD, (*currentPres)->name);
         out << std::endl;
         sh::CardRange cards = game.drawCards(N_DRAW_CARDS);
-        sh::CardType choice = gmUtil::promptPlayerForCard(in, out, cards);
-        if (!cards.discard(choice)) {
+        std::optional<sh::CardType> choice = gmUtil::promptPlayerForCard(in, out, cards);
+        if (!choice.has_value()) {
+            throw std::runtime_error("President cannot use veto!");
+        }
+
+        if (!cards.discard(*choice)) {
             throw std::runtime_error("Failed to discard card");
         }
 
@@ -96,12 +101,18 @@ namespace gameHandling{
 
         fmt::printf(out, messages::PLAY_POLICY, (*currentChancellor)->name);
         out << std::endl;
-        choice = gmUtil::promptPlayerForCard(in, out, cards);
-        if (!cards.selectForPolicy(choice) || !cards.applyToGame()) {
-            throw std::runtime_error("Failed to play policy card");
+        if (veto) {
+            out << messages::VETO_HINT << std::endl;
         }
 
-        return true;
+        choice = gmUtil::promptPlayerForCard(in, out, cards, veto);
+        if (!choice.has_value() && veto) {
+            out << messages::VETO_USED << std::endl;
+            //TODO advance election tracker
+            return;
+        } else if (choice.has_value() && (!cards.selectForPolicy(*choice) || !cards.applyToGame())) {
+            throw std::runtime_error("Failed to play policy card");
+        }
     }
 
     sh::GameEventHandler createEventHandler(std::istream &in, std::ostream &out, sh::Game &game) {

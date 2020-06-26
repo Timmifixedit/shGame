@@ -36,7 +36,8 @@ int main() {
 
             gmUtil::printGameStatus(std::cout, *game);
         }
-        while (!gameHandling::legislativePeriod(std::cin, std::cout, *game));
+
+        gameHandling::legislativePeriod(std::cin, std::cout, *game);
     }
     return 0;
 }

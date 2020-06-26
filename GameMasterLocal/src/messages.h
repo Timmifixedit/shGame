@@ -40,6 +40,8 @@ namespace messages {
     constexpr auto PLAYER_EXECUTED = "%s has been executed";
     constexpr auto POLICY_BOARD = "This is the current state of the policy board";
     constexpr auto PRES_SPECIAL_ELECTION = "The president (%s) will now choose a player to be the next president";
+    constexpr auto VETO_HINT = "The chancellor has the right to veto this agenda. To do so input 'Veto'";
+    constexpr auto VETO_USED = "The current administration used the veto power. No policy was played";
 }
 
 

@@ -24,7 +24,7 @@ namespace gameHandling {
 
     ElectionResult chancellorElection(std::istream &in, std::ostream &out, sh::Game &game);
 
-    bool legislativePeriod(std::istream &in, std::ostream &out, sh::Game &game);
+    void legislativePeriod(std::istream &in, std::ostream &out, sh::Game &game);
 
     sh::GameEventHandler createEventHandler(std::istream &in, std::ostream &out, sh::Game &game);
 
