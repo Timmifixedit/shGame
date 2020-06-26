@@ -61,7 +61,9 @@ namespace gmUtil {
         out << messages::PLAYER_ORDER << std::endl;
         for (const auto &player : game.getPlayers()) {
             out << player.name << " ";
-            if (player.isInGovernment() && player.role.has_value()) {
+            if (player.isDead()) {
+                out << "(dead)";
+            } if (player.isInGovernment() && player.role.has_value()) {
                 fmt::printf(out, messages::PLAYER_IN_GOV, toString(*player.role));
             } else if (player.role.has_value()) {
                 fmt::printf(out, messages::PLAYER_IS_CANDIDATE, toString(*player.role));
