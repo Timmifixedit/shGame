@@ -15,13 +15,14 @@
 
 using NameList = std::vector<std::string>;
 TEST(game_event_test, event_type) {
-    std::array<sh::GameEventPtr , 6> events = {
+    std::array<sh::GameEventPtr , 7> events = {
             std::make_shared<sh::LiberalsWin>(),
             std::make_shared<sh::FascistsWin>(),
             std::make_shared<sh::InvestigateLoyalty>(),
             std::make_shared<sh::SpecialElection>(),
             std::make_shared<sh::Execution>(),
-            std::make_shared<sh::Veto>()
+            std::make_shared<sh::Veto>(),
+            std::make_shared<sh::RandomPolicy>()
     };
 
     EXPECT_EQ(events[0]->type, sh::GameEventType::LiberalsWin);
@@ -30,6 +31,7 @@ TEST(game_event_test, event_type) {
     EXPECT_EQ(events[3]->type, sh::GameEventType::SpecialElection);
     EXPECT_EQ(events[4]->type, sh::GameEventType::Execution);
     EXPECT_EQ(events[5]->type, sh::GameEventType::Veto);
+    EXPECT_EQ(events[6]->type, sh::GameEventType::RandomPolicy);
 }
 
 /**
@@ -221,6 +223,25 @@ TEST(game_event_test, veto) {
     succeedNow = true;
     playNCArds(1, CardType::Fascist, game);
 
+    EXPECT_TRUE(success);
+}
+
+TEST(game_event_test, random_policy) {
+    using namespace sh;
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
+    bool success = false;
+    bool succeedNow = false;
+    game.subscribe(succeedOnEventNow(GameEventType::RandomPolicy, succeedNow, success));
+    game.subscribe(failOnEvent(GameEventType::LiberalsWin));
+    game.subscribe(failOnEvent(GameEventType::FascistsWin));
+    game.subscribe(failOnEvent(GameEventType::SpecialElection));
+    game.subscribe(failOnEvent(GameEventType::InvestigateLoyalty));
+    game.subscribe(failOnEvent(GameEventType::Execution));
+    game.subscribe(failOnEvent(GameEventType::Veto));
+    game.advanceElectionTracker();
+    game.advanceElectionTracker();
+    succeedNow = true;
+    game.advanceElectionTracker();
     EXPECT_TRUE(success);
 }
 

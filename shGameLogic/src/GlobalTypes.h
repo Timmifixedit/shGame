@@ -18,13 +18,13 @@ namespace sh {
     };
 
     enum class GameEventTrigger {
-        FascistPolicyPlayed, LiberalPolicyPlayed, PlayerExecuted, PlayerElected
+        FascistPolicyPlayed, LiberalPolicyPlayed, PlayerExecuted, PlayerElected, ElectionTrackerAdvanced
     };
 
     enum class GameEventType {
         LiberalsWin, FascistsWin,
         InvestigateLoyalty, Execution,
-        PolicyPeak, SpecialElection, Veto
+        PolicyPeak, SpecialElection, Veto, RandomPolicy
     };
 }
 #endif //SHGAME_GLOBALTYPES_H

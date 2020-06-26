@@ -152,7 +152,7 @@ namespace sh {
         using Role = Player::GovernmentRole;
         auto newRoleBearer = getPlayerByName(playerName);
         if (!newRoleBearer.has_value()) {
-            return {};
+            return std::nullopt;
         }
 
         if ((*newRoleBearer)->isDead()) {
@@ -187,7 +187,12 @@ namespace sh {
     }
 
     void Game::setNextPresident() {
-        auto currPres = getPlayerByCurrentRole(Player::GovernmentRole::President);
+        auto currPres = presCheckpoint.has_value() ? presCheckpoint :
+                getPlayerByCurrentRole(Player::GovernmentRole::President);
+        if (presCheckpoint.has_value()) {
+            presCheckpoint.reset();
+        }
+
         if (!currPres.has_value()) {
             currPres = util::selectRandom(players);
         }
@@ -237,17 +242,19 @@ namespace sh {
     }
 
     void Game::electGovernment() {
+        auto pres = getPlayerByCurrentRole(Player::GovernmentRole::President);
+        auto chancellor = getPlayerByCurrentRole(Player::GovernmentRole::Chancellor);
         for (auto govPlayer : getGovernment()) {
             govPlayer->removeFromGovernment();
         }
 
-        auto pres = getPlayerByCurrentRole(Player::GovernmentRole::President);
-        auto chancellor = getPlayerByCurrentRole(Player::GovernmentRole::Chancellor);
         if (pres.has_value()) {
+            setPlayerRole((*pres)->name, Player::GovernmentRole::President);
             (*pres)->elect();
         }
 
         if (chancellor.has_value()) {
+            setPlayerRole((*chancellor)->name, Player::GovernmentRole::Chancellor);
             (*chancellor)->elect();
         }
 
@@ -262,5 +269,42 @@ namespace sh {
         }
 
         throw std::runtime_error("No player is Hitler. As if that's a bad thing...");
+    }
+
+    auto Game::setNextPresident(const std::string &playerName) -> std::optional<SetRoleStatus> {
+        if (!presCheckpoint.has_value()) {
+            presCheckpoint = getPlayerByCurrentRole(Player::GovernmentRole::President);
+        }
+
+        return setPlayerRole(playerName, Player::GovernmentRole::President);
+    }
+
+    void Game::advanceElectionTracker() {
+        ++electionTracker;
+        generateEventsAndNotify(GameEventTrigger::ElectionTrackerAdvanced);
+    }
+
+    unsigned int Game::getElectionTracker() const {
+        return electionTracker;
+    }
+
+    void Game::resetElectionTracker() {
+        electionTracker = 0;
+    }
+
+    void Game::playRandomPolicy() {
+        CardRange topCard = drawCards(1);
+        topCard.selectForPolicy(*topCard.begin());
+        topCard.applyToGame();
+        auto pres = getPlayerByCurrentRole(Player::GovernmentRole::President);
+        for (auto &player : getGovernment()) {
+            player->removeFromGovernment();
+        }
+
+        if (pres.has_value()) {
+            setPlayerRole((*pres)->name, Player::GovernmentRole::President);
+        }
+
+        //TODO ignore presidential powers
     }
 }
