@@ -300,3 +300,35 @@ TEST(game_logic_test, election_tracker) {
     game.resetElectionTracker();
     EXPECT_EQ(game.getElectionTracker(), 0);
 }
+
+TEST(game_logic_test, random_policy_resets_tracker) {
+    using namespace sh;
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, {});
+    game.advanceElectionTracker();
+    game.playRandomPolicy();
+    EXPECT_EQ(game.getElectionTracker(), 0);
+}
+
+TEST(game_logic_test, random_policy_plays_card) {
+    using namespace sh;
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, {});
+    CardType topCardType;
+    {
+        CardRange topCard = game.drawCards(1);
+        topCardType = *topCard.begin();
+    }
+
+    game.playRandomPolicy();
+    EXPECT_EQ(game.getPolicies().find(topCardType)->second, 1);
+}
+
+TEST(game_logic_test, random_policy_resets_government) {
+    using namespace sh;
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, {});
+    game.setPlayerRole("A", Player::GovernmentRole::President);
+    game.setPlayerRole("B", Player::GovernmentRole::Chancellor);
+    game.electGovernment();
+    game.playRandomPolicy();
+    EXPECT_FALSE((*game.getPlayerByName("A"))->isInGovernment());
+    EXPECT_FALSE((*game.getPlayerByName("B"))->isInGovernment());
+}

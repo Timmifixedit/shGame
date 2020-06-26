@@ -174,6 +174,8 @@ namespace sh {
 
         void resetElectionTracker();
 
+        void playRandomPolicy();
+
         [[nodiscard]] unsigned int getElectionTracker() const;
 
         auto getHitler() const -> std::vector<Player>::const_iterator;

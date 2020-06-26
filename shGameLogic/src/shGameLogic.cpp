@@ -291,4 +291,20 @@ namespace sh {
     void Game::resetElectionTracker() {
         electionTracker = 0;
     }
+
+    void Game::playRandomPolicy() {
+        CardRange topCard = drawCards(1);
+        topCard.selectForPolicy(*topCard.begin());
+        topCard.applyToGame();
+        auto pres = getPlayerByCurrentRole(Player::GovernmentRole::President);
+        for (auto &player : getGovernment()) {
+            player->removeFromGovernment();
+        }
+
+        if (pres.has_value()) {
+            setPlayerRole((*pres)->name, Player::GovernmentRole::President);
+        }
+
+        //TODO ignore presidential powers
+    }
 }
