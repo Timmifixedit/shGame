@@ -160,6 +160,8 @@ namespace sh {
          */
         void setNextPresident();
 
+        auto setNextPresident(const std::string &playerName) -> std::optional<SetRoleStatus>;
+
         /**
          * Subscribes the given event handler to game events
          * @param handler the handler handling the event
@@ -188,6 +190,7 @@ namespace sh {
         std::vector<CardType> cardPile;
         std::vector<CardType> discardPile;
         std::vector<GameEventHandler> handlers;
+        std::optional<std::vector<Player>::iterator> presCheckpoint;
     };
 }
 

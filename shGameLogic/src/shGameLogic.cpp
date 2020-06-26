@@ -187,7 +187,12 @@ namespace sh {
     }
 
     void Game::setNextPresident() {
-        auto currPres = getPlayerByCurrentRole(Player::GovernmentRole::President);
+        auto currPres = presCheckpoint.has_value() ? presCheckpoint :
+                getPlayerByCurrentRole(Player::GovernmentRole::President);
+        if (presCheckpoint.has_value()) {
+            presCheckpoint.reset();
+        }
+
         if (!currPres.has_value()) {
             currPres = util::selectRandom(players);
         }
@@ -264,5 +269,13 @@ namespace sh {
         }
 
         throw std::runtime_error("No player is Hitler. As if that's a bad thing...");
+    }
+
+    auto Game::setNextPresident(const std::string &playerName) -> std::optional<SetRoleStatus> {
+        if (!presCheckpoint.has_value()) {
+            presCheckpoint = getPlayerByCurrentRole(Player::GovernmentRole::President);
+        }
+
+        return setPlayerRole(playerName, Player::GovernmentRole::President);
     }
 }

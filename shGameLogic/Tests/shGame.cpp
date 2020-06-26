@@ -143,7 +143,7 @@ TEST(game_logic_test, set_new_chanellor) {
     EXPECT_FALSE(chancellor.role.has_value());
 }
 
-//--------------- get set roles ----------------------------------------------------------------------------------------
+//--------------- set next president -----------------------------------------------------------------------------------
 TEST(game_logic_test, set_next_president) {
     using namespace sh;
     using Role = Player::GovernmentRole;
@@ -178,6 +178,57 @@ TEST(game_logic_test, set_next_pres_all_dead) {
     }
 
     EXPECT_THROW(game.setNextPresident(), std::runtime_error);
+}
+
+TEST(game_logic_test, set_next_pres_manually) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, {});
+    EXPECT_EQ(game.setPlayerRole("C", Role::President), SetRoleStatus::Success);
+    EXPECT_EQ(game.setNextPresident("F"), SetRoleStatus::Success);
+    EXPECT_EQ((*game.getPlayerByName("F"))->role, Role::President);
+    EXPECT_FALSE((*game.getPlayerByName("C"))->role.has_value());
+    game.setNextPresident();
+    EXPECT_EQ((*game.getPlayerByName("D"))->role, Role::President);
+    EXPECT_FALSE((*game.getPlayerByName("F"))->role.has_value());
+    game.setNextPresident();
+    EXPECT_EQ((*game.getPlayerByName("E"))->role, Role::President);
+}
+
+TEST(game_logic_test, set_next_pres_manually_president_override) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, {});
+    EXPECT_EQ(game.setPlayerRole("C", Role::President), SetRoleStatus::Success);
+    EXPECT_EQ(game.setNextPresident("D"), SetRoleStatus::Success);
+    game.setNextPresident();
+    EXPECT_EQ((*game.getPlayerByName("D"))->role, Role::President);
+    game.setNextPresident();
+    EXPECT_EQ((*game.getPlayerByName("E"))->role, Role::President);
+}
+
+TEST(game_logic_test, set_next_pres_invalid) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, {});
+    EXPECT_EQ(game.setPlayerRole("C", Role::President), SetRoleStatus::Success);
+    EXPECT_EQ(game.setNextPresident("C"), SetRoleStatus::Ineligible);
+}
+
+TEST(game_logic_test, set_next_pres_manually_twice) {
+    using namespace sh;
+    using Role = Player::GovernmentRole;
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, {});
+    EXPECT_EQ(game.setPlayerRole("C", Role::President), SetRoleStatus::Success);
+    EXPECT_EQ(game.setNextPresident("F"), SetRoleStatus::Success);
+    EXPECT_EQ((*game.getPlayerByName("F"))->role, Role::President);
+    EXPECT_FALSE((*game.getPlayerByName("C"))->role.has_value());
+    EXPECT_EQ(game.setNextPresident("G"), SetRoleStatus::Success);
+    EXPECT_EQ((*game.getPlayerByName("G"))->role, Role::President);
+    EXPECT_FALSE((*game.getPlayerByName("F"))->role.has_value());
+    game.setNextPresident();
+    EXPECT_EQ((*game.getPlayerByName("D"))->role, Role::President);
+    EXPECT_FALSE((*game.getPlayerByName("F"))->role.has_value());
 }
 
 //--------------- kill player ------------------------------------------------------------------------------------------
