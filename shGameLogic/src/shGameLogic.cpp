@@ -278,4 +278,17 @@ namespace sh {
 
         return setPlayerRole(playerName, Player::GovernmentRole::President);
     }
+
+    void Game::advanceElectionTracker() {
+        ++electionTracker;
+        generateEventsAndNotify(GameEventTrigger::ElectionTrackerAdvanced);
+    }
+
+    unsigned int Game::getElectionTracker() const {
+        return electionTracker;
+    }
+
+    void Game::resetElectionTracker() {
+        electionTracker = 0;
+    }
 }

@@ -289,3 +289,14 @@ TEST(game_logic_test, elect_override_chancellor) {
     EXPECT_EQ((*game.getPlayerByName("B"))->role, Role::President);
     EXPECT_EQ((*game.getPlayerByName("C"))->role, Role::Chancellor);
 }
+//--------------- election tracker -------------------------------------------------------------------------------------
+
+TEST(game_logic_test, election_tracker) {
+    using namespace sh;
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, {});
+    EXPECT_EQ(game.getElectionTracker(), 0);
+    game.advanceElectionTracker();
+    EXPECT_EQ(game.getElectionTracker(), 1);
+    game.resetElectionTracker();
+    EXPECT_EQ(game.getElectionTracker(), 0);
+}

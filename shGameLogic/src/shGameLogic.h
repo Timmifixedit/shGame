@@ -170,6 +170,12 @@ namespace sh {
 
         void electGovernment();
 
+        void advanceElectionTracker();
+
+        void resetElectionTracker();
+
+        [[nodiscard]] unsigned int getElectionTracker() const;
+
         auto getHitler() const -> std::vector<Player>::const_iterator;
 
     private:
@@ -191,6 +197,7 @@ namespace sh {
         std::vector<CardType> discardPile;
         std::vector<GameEventHandler> handlers;
         std::optional<std::vector<Player>::iterator> presCheckpoint;
+        unsigned int electionTracker = 0;
     };
 }
 

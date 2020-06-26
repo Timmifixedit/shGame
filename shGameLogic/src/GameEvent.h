@@ -69,6 +69,12 @@ namespace sh {
         [[nodiscard]] bool condition(const Game &gameState, GameEventTrigger trigger) const override;
     };
 
+    class RandomPolicy : public GameEvent {
+    public:
+        RandomPolicy();
+        [[nodiscard]] bool condition(const Game &gameState, GameEventTrigger trigger) const override;
+    };
+
     enum class RuleSetType {
         Standard
     };

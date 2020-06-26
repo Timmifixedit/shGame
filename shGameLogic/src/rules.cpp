@@ -9,7 +9,8 @@ namespace sh {
         switch (type) {
             case RuleSetType::Standard:
                 return {make_shared<LiberalsWin>(), make_shared<FascistsWin>(), make_shared<SpecialElection>(),
-                        make_shared<InvestigateLoyalty>(), make_shared<Execution>(), make_shared<Veto>()};
+                        make_shared<InvestigateLoyalty>(), make_shared<Execution>(), make_shared<Veto>(),
+                        std::make_shared<RandomPolicy>()};
         }
 
         throw std::runtime_error("Unknown rule set type");

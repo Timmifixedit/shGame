@@ -94,4 +94,11 @@ namespace sh {
         return fasCards >= NUM_FAS_CARDS_VETO;
     }
 
+    RandomPolicy::RandomPolicy() : GameEvent(GameEventType::RandomPolicy){}
+
+    bool RandomPolicy::condition(const Game &gameState, GameEventTrigger trigger) const {
+        constexpr unsigned int MAX_ELECTION_TRACKER = 3;
+        return trigger == GameEventTrigger::ElectionTrackerAdvanced &&
+            gameState.getElectionTracker() >= MAX_ELECTION_TRACKER;
+    }
 }
