@@ -58,6 +58,10 @@ namespace gmUtil {
             out << toString(type) << ": " << num << std::endl;
         }
 
+        fmt::printf(out, messages::ELECTION_TRACKER, game.getElectionTracker());
+        out << std::endl;
+        fmt::printf(out, messages::NUM_CARDS_LEFT, game.getCardPile().size());
+        out << std::endl;
         out << messages::PLAYER_ORDER << std::endl;
         for (const auto &player : game.getPlayers()) {
             out << player.name << " ";

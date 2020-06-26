@@ -50,7 +50,7 @@ namespace gameHandling{
         const char *message = chancellorName.empty() ? messages::CONFIRM_ELECTION_FAILED : messages::CONFIRM_DECISION;
         bool confirm = gmUtil::getConfirmation(message, in, out);
         if (chancellorName.empty() && confirm) {
-            //TODO advace election tracker
+            game.advanceElectionTracker();
             return ElectionResult::FAILED;
         } else if (!confirm) {
             return ElectionResult::INPUT_FAILURE;
@@ -108,7 +108,7 @@ namespace gameHandling{
         choice = gmUtil::promptPlayerForCard(in, out, cards, veto);
         if (!choice.has_value() && veto) {
             out << messages::VETO_USED << std::endl;
-            //TODO advance election tracker
+            game.advanceElectionTracker();
             return;
         } else if (choice.has_value() && (!cards.selectForPolicy(*choice) || !cards.applyToGame())) {
             throw std::runtime_error("Failed to play policy card");
@@ -121,6 +121,7 @@ namespace gameHandling{
         using GovRole = sh::Player::GovernmentRole;
         using PType = sh::Player::Type;
         return [&in, &out, &game](sh::GameEventType type) {
+            out << EVENT_PHASE << std::endl;
             switch (type) {
                 case sh::GameEventType::LiberalsWin: {
                     const sh::Game &localGame = game;
@@ -131,7 +132,7 @@ namespace gameHandling{
 
                     fmt::printf(out, LIBERALS_WON_CARDS, localGame.getPolicies().find(CType::Liberal)->second);
                     out << std::endl;
-                    break;
+                    std::exit(0);
                 }
                 case sh::GameEventType::FascistsWin: {
                     const sh::Game &localGame = game;
@@ -143,7 +144,7 @@ namespace gameHandling{
 
                     fmt::printf(out, FASCISTS_WON_CARDS, localGame.getPolicies().find(CType::Fascist)->second);
                     out << std::endl;
-                    break;
+                    std::exit(0);
                 }
                 case sh::GameEventType::InvestigateLoyalty: {
                     const sh::Game &localGame = game;
@@ -208,6 +209,12 @@ namespace gameHandling{
                 case sh::GameEventType::Veto:
                     veto = true;
                     break;
+                case sh::GameEventType::RandomPolicy: {
+                    sh::CardType cardPlayed = game.playRandomPolicy();
+                    fmt::printf(out, RANDOM_POLICY, sh::util::strings::toString(cardPlayed));
+                    out << std::endl;
+                    break;
+                }
                 default:
                     throw std::runtime_error("Event type not supported yet!");
             }

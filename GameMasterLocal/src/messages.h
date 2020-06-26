@@ -42,6 +42,16 @@ namespace messages {
     constexpr auto PRES_SPECIAL_ELECTION = "The president (%s) will now choose a player to be the next president";
     constexpr auto VETO_HINT = "The chancellor has the right to veto this agenda. To do so input 'Veto'";
     constexpr auto VETO_USED = "The current administration used the veto power. No policy was played";
+    constexpr auto RANDOM_POLICY = "The public is upset about the government doing nothing so they decided to take "
+                                   "things into their own hands. A %s policy was randomly enacted";
+    constexpr auto ELECTION_TRACKER = "The election tracker is at %d";
+    constexpr auto NUM_CARDS_LEFT = "There are %d cards left on the card pile";
+    constexpr auto WELCOME = "Welcome to Secret Hitler. All players have been assigned their role. They are as followed";
+    constexpr auto ROUND_OVER = "--- Round over ---";
+    constexpr auto NEW_ROUND = "--- A new round has started. This is round %d ---";
+    constexpr auto ELECTION_PHASE = "--- Election phase ---";
+    constexpr auto EXECUTIVE_PHASE = "--- Executive phase ---";
+    constexpr auto EVENT_PHASE = "--- Event phase ---";
 }
 
 
