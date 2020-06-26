@@ -292,8 +292,9 @@ namespace sh {
         electionTracker = 0;
     }
 
-    void Game::playRandomPolicy() {
+    CardType Game::playRandomPolicy() {
         CardRange topCard = drawCards(1);
+        CardType ret = *topCard.begin();
         topCard.selectForPolicy(*topCard.begin());
         topCard.applyToGame();
         auto pres = getPlayerByCurrentRole(Player::GovernmentRole::President);
@@ -306,5 +307,6 @@ namespace sh {
         }
 
         //TODO ignore presidential powers
+        return ret;
     }
 }

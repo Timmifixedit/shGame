@@ -174,7 +174,7 @@ namespace sh {
 
         void resetElectionTracker();
 
-        void playRandomPolicy();
+        CardType playRandomPolicy();
 
         [[nodiscard]] unsigned int getElectionTracker() const;
 
