@@ -30,6 +30,16 @@ namespace messages {
     constexpr auto PLAYER_IS_CANDIDATE = "candidate (%s)";
     constexpr auto PLAYER_IN_GOV = "current government (%d)";
     constexpr auto PLAYER_ORDER = "This is the seating order (circular from top to bottom)";
+    constexpr auto LIBERALS_WON_CARDS = "The liberals won by enacting %s liberal policies!";
+    constexpr auto LIBERALS_WON_KILL = "The liberals won by killing Hitler!";
+    constexpr auto FASCISTS_WON_CARDS = "The fascists won by enacting %s fascist policies!";
+    constexpr auto FASCISTS_WON_HITLER = "The fascists won by setting up Hitler as Chancellor!";
+    constexpr auto PRES_INVESTIGATE = "The president (%s) will now check the loyalty of a player of their choosing";
+    constexpr auto CHOOSE_PLAYER = "Choose a player";
+    constexpr auto PRES_EXECUTION = "The president (%s) will now choose a player to be executed";
+    constexpr auto PLAYER_EXECUTED = "%s has been executed";
+    constexpr auto POLICY_BOARD = "This is the current state of the policy board";
+    constexpr auto PRES_SPECIAL_ELECTION = "The president (%s) will now choose a player to be the next president";
 }
 
 

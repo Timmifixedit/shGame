@@ -50,6 +50,10 @@ namespace gmUtil {
     bool getConfirmation(const std::string &msg, std::istream &in, std::ostream &out);
 
     void printGameStatus(std::ostream &out, const sh::Game &game);
+
+    std::string promptForPlayer(std::istream &in, std::ostream &out, const sh::Game &game);
+
+    std::string promptForPlayerAndConfirm(std::istream &in, std::ostream &out, const sh::Game &game);
 }
 
 

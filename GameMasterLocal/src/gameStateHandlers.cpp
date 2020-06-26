@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
+#include <SecretHitlerGameLogic/shGameLogic.h>
 #include <SecretHitlerGameLogic/rules.h>
 #include <SecretHitlerGameLogic/enumsToString.h>
 #include <sstream>
@@ -14,6 +15,8 @@
 #include "util.h"
 
 namespace gameHandling{
+    bool specialElection = false;
+
     auto setupGame(std::istream &input, std::ostream &output) -> std::optional<sh::Game> {
         const std::string playersIn = gmUtil::promptForInput(messages::INPUT_PLAYER_NAMES, input, output);
         const std::vector<std::string> playerNames = gmUtil::splitString(playersIn, ' ');
@@ -135,5 +138,103 @@ namespace gameHandling{
         }
 
         return true;
+    }
+
+    sh::GameEventHandler createEventHandler(std::istream &in, std::ostream &out, sh::Game &game) {
+        using namespace messages;
+        using CType = sh::CardType;
+        using GovRole = sh::Player::GovernmentRole;
+        using PType = sh::Player::Type;
+        return [&in, &out, &game](sh::GameEventType type) {
+            switch (type) {
+                case sh::GameEventType::LiberalsWin: {
+                    const sh::Game &localGame = game;
+                    if (localGame.getHitler()->isDead()) {
+                        out << LIBERALS_WON_KILL << std::endl;
+                        return;
+                    }
+
+                    fmt::printf(out, LIBERALS_WON_CARDS, localGame.getPolicies().find(CType::Liberal)->second);
+                    out << std::endl;
+                    break;
+                }
+                case sh::GameEventType::FascistsWin: {
+                    const sh::Game &localGame = game;
+                    const sh::Player &hitler = *localGame.getHitler();
+                    if (hitler.isInGovernment() && hitler.role == GovRole ::Chancellor) {
+                        out << FASCISTS_WON_HITLER << std::endl;
+                        break;
+                    }
+
+                    fmt::printf(out, FASCISTS_WON_CARDS, localGame.getPolicies().find(CType::Fascist)->second);
+                    out << std::endl;
+                    break;
+                }
+                case sh::GameEventType::InvestigateLoyalty: {
+                    const sh::Game &localGame = game;
+                    auto pres = localGame.getPlayerByCurrentRole(GovRole::President);
+                    if (!pres.has_value()) {
+                        throw std::runtime_error("No player is president");
+                    }
+
+                    fmt::printf(out, PRES_INVESTIGATE, (*pres)->name);
+                    out << std::endl;
+                    std::string pName = gmUtil::promptForPlayerAndConfirm(in, out, localGame);
+                    PType playerType = (*localGame.getPlayerByName(pName))->type;
+                    playerType = playerType == PType::Liberal ? playerType : PType::Fascist;
+                    out << pName << " is " << sh::util::strings::toString(playerType) << std::endl;
+                    break;
+                }
+                case sh::GameEventType::Execution: {
+                    auto pres = game.getPlayerByCurrentRole(GovRole::President);
+                    if (!pres.has_value()) {
+                        throw std::runtime_error("No player is president");
+                    }
+
+                    fmt::printf(out, PRES_EXECUTION, (*pres)->name);
+                    out << std::endl;
+                    std::string pName = gmUtil::promptForPlayerAndConfirm(in, out, game);
+                    game.killPlayer(pName);
+                    fmt::printf(out, PLAYER_EXECUTED, pName);
+                    out << std::endl;
+                    break;
+                }
+                case sh::GameEventType::SpecialElection: {
+                    auto pres = game.getPlayerByCurrentRole(GovRole::President);
+                    if (!pres.has_value()) {
+                        throw std::runtime_error("No player is president");
+                    }
+
+                    fmt::printf(out, PRES_SPECIAL_ELECTION, (*pres)->name);
+                    out << std::endl;
+                    std::optional<sh::SetRoleStatus> status{};
+                    gmUtil::printGameStatus(out, game);
+                    while ((status = game.setNextPresident(gmUtil::promptForPlayerAndConfirm(in, out, game)))
+                        != sh::SetRoleStatus::Success) {
+                        if (!status.has_value()) {
+                            throw std::runtime_error("Player name not found. Cannot perform special election!");
+                        }
+
+                        switch (*status) {
+                            case sh::SetRoleStatus::PlayerIsDead:
+                                out << PLAYER_DEAD << std::endl;
+                                break;
+                            case sh::SetRoleStatus::Ineligible:
+                                out << PLAYER_INELIGIBLE << std::endl;
+                                break;
+                            default:
+                                throw std::runtime_error("That's not how booleans are supposed to work!");
+                        }
+                    }
+
+                    specialElection = true;
+                    break;
+                }
+                case sh::GameEventType::Veto:
+                    break;
+                default:
+                    throw std::runtime_error("Event type not supported yet!");
+            }
+        };
     }
 }

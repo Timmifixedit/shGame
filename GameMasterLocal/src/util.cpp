@@ -53,6 +53,11 @@ namespace gmUtil {
 
     void printGameStatus(std::ostream &out, const sh::Game &game) {
         using namespace sh::util::strings;
+        out << messages::POLICY_BOARD << std::endl;
+        for (auto [type, num] : game.getPolicies()) {
+            out << toString(type) << ": " << num << std::endl;
+        }
+
         out << messages::PLAYER_ORDER << std::endl;
         for (const auto &player : game.getPlayers()) {
             out << player.name << " ";
@@ -66,5 +71,24 @@ namespace gmUtil {
 
             out << std::endl;
         }
+    }
+
+    std::string promptForPlayer(std::istream &in, std::ostream &out, const sh::Game &game) {
+        using namespace messages;
+        std::string playerName;
+        while (!game.getPlayerByName(playerName = gmUtil::promptForInput(CHOOSE_PLAYER,
+                in, out)).has_value()) {
+            out << PLAYER_NOT_FOUND << std::endl;
+        }
+
+        return playerName;
+    }
+
+    std::string promptForPlayerAndConfirm(std::istream &in, std::ostream &out, const sh::Game &game) {
+        std::string pName;
+        do {
+            pName = gmUtil::promptForPlayer(in, out, game);
+        } while (!gmUtil::getConfirmation(messages::CONFIRM_DECISION, in, out));
+        return pName;
     }
 }
