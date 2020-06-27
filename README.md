@@ -17,3 +17,9 @@ Attempt to implement the card game "Secret Hitler".
  Link with
  ```
  -lSecretHitlerGameLogic
+ ```
+
+ ## GameMasterLocal
+ Console application for a game master moderating a match. The application basically tells the game master what to do next,
+ monitors the game state and automatically performs actions like drawing and shuffling cards. Requires the 
+ SecretHitlerGameLogic-library to run. Build using the supplied CMake-file.
