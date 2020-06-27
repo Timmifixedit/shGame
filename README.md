@@ -1,5 +1,5 @@
 # shGame
-Attempt to implement the card game "Secret Hitler".
+Attempt to implement the card game "Secret Hitler". The official webpage of the game can be found [here](https://www.secrethitler.com/).
 
  ## Game logic
  Static library to simulate the game board. Install by:
