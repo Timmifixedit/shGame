@@ -151,11 +151,21 @@ TEST(card_range_test, raii_applied) {
     EXPECT_EQ(game.getPolicies().find(other)->second, 0);
 }
 
-TEST(car_range_test, applied_status) {
+TEST(card_range_test, applied_status) {
     using namespace sh;
     Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
     CardRange topCards = game.drawCards(3);
     EXPECT_FALSE(topCards.alreadyApplied());
     topCards.applyToGame();
     EXPECT_TRUE(topCards.alreadyApplied());
+}
+
+TEST(card_range_test, discard_remaining) {
+    using namespace sh;
+    Game game(NameList{"A", "B", "C", "D", "E", "F", "G"}, createRuleSet(RuleSetType::Standard));
+    CardRange topCards = game.drawCards(3);
+    std::vector<CardType> topCardsCopy(topCards.begin(), topCards.end());
+    EXPECT_TRUE(topCards.discardRemaining());
+    topCards.applyToGame();
+    EXPECT_EQ(topCardsCopy, game.getDiscardCardPile());
 }

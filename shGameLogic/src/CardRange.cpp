@@ -42,6 +42,18 @@ namespace sh {
         return false;
     }
 
+    bool CardRange::discardRemaining() {
+        if (applied) {
+            return false;
+        }
+
+        for (auto card : cards) {
+            discard(card);
+        }
+
+        return true;
+    }
+
     bool CardRange::selectForPolicy(CardType card) {
         if (policy.has_value() || applied) {
             return false;

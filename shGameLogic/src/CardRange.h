@@ -37,6 +37,12 @@ namespace sh{
         bool discard(CardType card);
 
         /**
+         * Marks all remaining cards to be discarded
+         * @return false id range was already applied, true otherwise
+         */
+        bool discardRemaining();
+
+        /**
          * Selects a card to be added as policy
          * @param card type of the card to be added as policy
          * @return true if card was successfully marked, false if card of specified type cannot be found or a policy
