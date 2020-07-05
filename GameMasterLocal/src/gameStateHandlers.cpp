@@ -108,9 +108,14 @@ namespace gameHandling{
         choice = gmUtil::promptPlayerForCard(in, out, cards, veto);
         if (!choice.has_value() && veto) {
             out << messages::VETO_USED << std::endl;
+            if (!cards.discardRemaining() || !cards.applyToGame()) {
+                throw std::runtime_error("Failed to discard cards");
+            }
+
             game.advanceElectionTracker();
             return;
-        } else if (choice.has_value() && (!cards.selectForPolicy(*choice) || !cards.applyToGame())) {
+        } else if (choice.has_value() && (!cards.selectForPolicy(*choice) || !cards.discardRemaining() ||
+            !cards.applyToGame())) {
             throw std::runtime_error("Failed to play policy card");
         }
     }
